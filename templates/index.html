@@ -1,3 +1,81 @@
-<title>Etusivu</title>
-<h1>Etusivu</h1>
-<b>Tervetuloa</b> <b>sovellukseen</b>!
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tervetuloa</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 40px;
+            text-align: left;
+        }
+
+        button {
+            font-family: 'Courier New', monospace;
+            margin: 40px;
+            text-align: right;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+
+        h1 {
+            color: rgb(30, 255, 0);
+            overflow: hidden;
+            white-space: nowrap;
+            margin: 0 auto;
+            border-right: .70em solid rgb(30, 255, 0);
+            font-size: 24px;
+            display: inline-block;
+            animation:
+                typing 3s steps(11, end),
+                blink-caret 0.27272727272s step-end infinite;
+                
+        }
+
+        @keyframes typing {
+            from {
+                width: 0%;
+            }
+            to {
+                width: 11.4%;
+            }
+        }
+
+        @keyframes blink-caret {
+            from, to {
+                border-color: transparent;
+            }
+            50% {
+                border-color: rgb(30, 255, 0);
+            }
+        }
+
+        .dark-mode {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .toggle-btn {
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #000;
+            padding: 10px;
+            cursor: pointer;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tervetuloa </h1>
+    <p>Tämä on vasta etusivun pohja, kirjautuminen tulee seuraavaksi.</p>
+    <button class="toggle-btn" onclick="toggleDarkMode()">Vaihda tumma tila</button>
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+    </script>
+</body>
+</html>

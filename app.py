@@ -1,22 +1,12 @@
-from flask import Flask
-from flask import render_template, request
+from flask import Flask, render_template, redirect, request
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import text
+from os import getenv
 
 app = Flask(__name__)
-app.config["CACHE_TYPE"] = "null"
+app.config['SQLALCHEMY_DATABASE_URI'] = getenv("DATABASE_URL")
+db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
     return render_template("index.html")
-
-@app.route("/order")
-def order():
-    return render_template("order.html")
-
-@app.route("/result", methods=["POST"])
-def result():
-    pizza = request.form["pizza"]
-    extras = request.form.getlist("extra")
-    message = request.form["message"]
-    return render_template("result.html", pizza=pizza,
-                                          extras=extras,
-                                          message=message)
