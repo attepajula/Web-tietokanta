@@ -70,12 +70,56 @@
 </head>
 <body>
     <h1>Tervetuloa </h1>
-    <p>Tämä on vasta etusivun pohja, kirjautuminen tulee seuraavaksi.</p>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    {% if session.username %}
+        <p>Olet kirjautunut nimellä {{ session.username }}</p>
+        <a href="/logout">Kirjaudu ulos</a>
+    {% else %}
+        <form action="/login" method="POST">
+            <p>Tunnus:<br>
+            <input type="text" name="username"></p>
+            <p>Salasana:<br>
+            <input type="password" name="password"></p>
+            <input type="submit" value="Kirjaudu">
+            <a href="/signup">Siirry rekisteröitymiseen</a>
+        </form>
+    {% endif %}
     <button class="toggle-btn" onclick="toggleDarkMode()">Vaihda tumma tila</button>
     <script>
         function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-        }
+            const body = document.body;
+            const darkModeEnabled = body.classList.toggle('dark-mode');
+
+            // Set preference
+            setDarkModePreference(darkModeEnabled);
+            }
+
+            function getDarkModePreference() {
+                const darkModeCookie = document.cookie.replace(/(?:(?:^|.*;\s*)darkModeEnabled\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                return darkModeCookie === 'true';
+            }
+
+            function setDarkModePreference(enabled) {
+                document.cookie = `darkModeEnabled=${enabled}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/`;
+            }
+
+            // Set darkmode on if prefered
+            document.addEventListener("DOMContentLoaded", function () {
+                const darkModeEnabled = getDarkModePreference();
+                if (darkModeEnabled) {
+                    document.body.classList.add('dark-mode');
+                }
+            });
+
     </script>
 </body>
 </html>
