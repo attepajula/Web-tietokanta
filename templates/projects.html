@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projektit</title>
+    <style>
+        a.submit-link {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 12px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #4CAF50; /* Vihreä väri */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 40px;
+            text-align: left;
+        }
+
+        button {
+            font-family: 'Courier New', monospace;
+            margin: 40px;
+            text-align: right;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .dark-mode {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .toggle-btn {
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #000;
+            padding: 10px;
+            cursor: pointer;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+{% if session.username %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <p>Olet kirjautunut nimellä {{ session.username }}</p>
+    <a href="/logout" class="submit-link">Kirjaudu ulos</a>
+    <h1>Add Project</h1>
+    <form method="POST" action="/add_project">
+        <label for="project_name">Project Name:</label>
+        <input type="text" id="project_name" name="project_name" required><br>
+
+        <label for="owner_name">Owner Name:</label>
+        <input type="text" id="owner_name" name="owner_name" required><br>
+
+        <label for="notes">Notes:</label>
+        <textarea id="notes" name="notes"></textarea><br>
+
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date"><br>
+
+        <label for="start_stage">Start stage:</label>
+        <input type="text" id="stage" name="start_stage" required><br>
+
+        <label for="end_stage">End Stage:</label>
+        <input type="int" id="stage" name="end_stage" required><br>
+
+        <button type="submit">Add Project</button>
+    </form>
+{% else %}
+    <a href="/" class="submit-link">Jotain meni vikaan, siirry etusivulle</a>
+{% endif %}
+<button class="toggle-btn" onclick="toggleDarkMode()">☀️/🌑</button>
+    <script>
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeEnabled = body.classList.toggle('dark-mode');
+
+            // Set preference
+            setDarkModePreference(darkModeEnabled);
+            }
+
+            function getDarkModePreference() {
+                const darkModeCookie = document.cookie.replace(/(?:(?:^|.*;\s*)darkModeEnabled\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                return darkModeCookie === 'true';
+            }
+
+            function setDarkModePreference(enabled) {
+                document.cookie = `darkModeEnabled=${enabled}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/`;
+            }
+
+            // Set darkmode on if prefered
+            document.addEventListener("DOMContentLoaded", function () {
+                const darkModeEnabled = getDarkModePreference();
+                if (darkModeEnabled) {
+                    document.body.classList.add('dark-mode');
+                }
+            });
+
+    </script>
+</body>
+</html>
