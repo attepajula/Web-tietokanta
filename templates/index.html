@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tervetuloa</title>
     <style>
+        a.submit-link {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 12px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #4CAF50; /* Vihreä väri */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
         body {
             font-family: 'Courier New', monospace;
             margin: 40px;
@@ -22,11 +34,11 @@
 
 
         h1 {
-            color: rgb(30, 255, 0);
+            color: #4CAF50;
             overflow: hidden;
             white-space: nowrap;
             margin: 0 auto;
-            border-right: .70em solid rgb(30, 255, 0);
+            border-right: .70em solid #4CAF50;
             font-size: 24px;
             display: inline-block;
             animation:
@@ -49,7 +61,7 @@
                 border-color: transparent;
             }
             50% {
-                border-color: rgb(30, 255, 0);
+                border-color: #4CAF50;
             }
         }
 
@@ -82,18 +94,19 @@
     
     {% if session.username %}
         <p>Olet kirjautunut nimellä {{ session.username }}</p>
-        <a href="/logout">Kirjaudu ulos</a>
+        <a href="/logout" class="submit-link">Kirjaudu ulos</a>
+        <a href="/projects" class="submit-link">Siirry projekteihin</a>
     {% else %}
+        </p><a href="/signup" class="submit-link">Siirry rekisteröitymiseen</a>
         <form action="/login" method="POST">
             <p>Tunnus:<br>
             <input type="text" name="username"></p>
             <p>Salasana:<br>
             <input type="password" name="password"></p>
             <input type="submit" value="Kirjaudu">
-            <a href="/signup">Siirry rekisteröitymiseen</a>
         </form>
     {% endif %}
-    <button class="toggle-btn" onclick="toggleDarkMode()">Vaihda tumma tila</button>
+    <button class="toggle-btn" onclick="toggleDarkMode()">☀️/🌑</button>
     <script>
         function toggleDarkMode() {
             const body = document.body;
