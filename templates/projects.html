@@ -9,50 +9,57 @@
             font-family: 'Courier New', monospace;
             margin: 40px;
             text-align: left;
-            margin-right: 75%; /* Lisätty margin-left sijoittamaan lomake näytön oikeaan reunaan */
         }
-
+    
+        form {
+            font-family: 'Courier New', monospace;
+            text-align: left;
+            width: 20%;
+            float: left;
+        }
+    
         label {
             display: block;
             margin-bottom: 5px;
         }
-
-        input, textarea {
+    
+        input, textarea, select {
             width: calc(100% - 16px);
             padding: 8px;
             margin-bottom: 10px;
             box-sizing: border-box;
         }
-
+    
         input[type="submit"] {
             display: inline-block;
             padding: 10px 20px;
             font-size: 12px;
             text-align: center;
             text-decoration: none;
-            background-color: #4CAF50; /* Vihreä väri */
+            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-
+    
         input[readonly] {
             background-color: #eee;
         }
+    
         a.submit-link {
             display: inline-block;
             padding: 10px 20px;
             font-size: 12px;
             text-align: center;
             text-decoration: none;
-            background-color: #4CAF50; /* Vihreä väri */
+            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-
+    
         button {
             font-family: 'Courier New', monospace;
             margin: 40px;
@@ -61,12 +68,12 @@
             top: 0;
             right: 0;
         }
-
+    
         .dark-mode {
             background-color: #000;
             color: #fff;
         }
-
+    
         .toggle-btn {
             background-color: #fff;
             color: #000;
@@ -76,6 +83,7 @@
             outline: none;
         }
     </style>
+    
 </head>
 <body>
 {% if session.username %}
@@ -88,10 +96,12 @@
             </ul>
         {% endif %}
     {% endwith %}
+
     <p>Logged in as {{ session.username }}</p>
     <a href="/logout" class="submit-link">Log out</a>
     <a href="/" class="submit-link">To frontpage</a>
-    <h1>Add Project</h1>
+
+    <h1>Add or show a project</h1>
     <form method="POST" action="/add_project">
         <label for="project_name">Project Name:</label>
         <input type="text" id="project_name" name="project_name" required><br>
@@ -112,6 +122,17 @@
         <input type="number" id="stage" name="end_stage" required><br>
 
         <input type="submit" value="Add project">
+    </form>
+
+    <form method="GET" action="/show_project">
+        <label for="project_select">Choose a project:</label>
+        <select id="project_select" name="selected_project" required>
+            {% for project in projects %}
+                <option value="{{ project.project_name }}">{{ project.project_name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <input type="submit" value="Show">
     </form>
 {% else %}
     <a href="/" class="submit-link">Log in</a>
