@@ -4,13 +4,16 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from os import getenv
 from dotenv import load_dotenv
 from sqlalchemy.sql import text
+import logging
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 app.secret_key = getenv("SECRET_KEY")
+app.logger.setLevel(logging.INFO)
 db = SQLAlchemy(app)
+
 
 @app.route("/", methods=["GET"])
 def index():
@@ -55,7 +58,7 @@ def add_new_user():
       
     return redirect("/signup")
 
-@app.route("/add_project", methods=["GET", "POST"])
+@app.route("/add_project", methods=["POST"])
 def add_project():
     if request.method == "POST":
         print("mentii")
@@ -85,13 +88,12 @@ def add_project():
             db.session.execute(text(sql), params)
             # Commit changes
             db.session.commit()
-            flash("Project added success")
+            flash("Project added")
         except:
             flash("Something went wrong")
     else:
         print("sdfsfd")
     return redirect("/projects")
-
 
 @app.route("/logout")
 def logout():
@@ -102,9 +104,32 @@ def logout():
 def signup():
     return render_template("signup.html")
 
-@app.route("/projects")
+@app.route("/show_project", methods=["POST", "GET"])
+def show_project():
+    if request.method == "POST":
+        project = request.form["selected_project"]
+        sql = "SELECT * FROM projects WHERE project_name = :project_name"
+        try:
+            data = db.session.execute(text(sql), {"project_name": project}).fetchall()
+            app.logger.info("Query executed successfully.")
+            app.logger.info(f"Data: {data}")
+        except Exception as e:
+            app.logger.error(f"Error executing query: {str(e)}")
+    else:
+        app.logger.info("Request method is not POST.")
+    return redirect("/projects")
+
+@app.route("/projects", methods=["GET"])
 def projects():
-    return render_template("projects.html")
+    if request.method == "GET":
+        username = session.get("username")
+        sql = "SELECT project_name FROM projects WHERE owner_name = :username;"
+        try:
+            projects = db.session.execute(text(sql), {"username": username}).fetchall()
+        except:
+            projects = []
+            flash("No projects yet", "error")
+    return render_template("projects.html", projects=projects)
 
 if __name__ == "__main__":
     app.run(debug=True)
