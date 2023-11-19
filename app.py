@@ -49,15 +49,16 @@ def add_new_user():
         try:
             db.session.execute(text(sql), {"username": username, "password": hash_value})
             db.session.commit()
-            flash("Käyttäjä luotu", "success")
+            flash("User created", "success")
         except:
-            flash("Virhe: käyttäjänimi varattu", "error")
+            flash("Username taken", "error")
       
     return redirect("/signup")
 
-@app.route("/add_project", methods=["POST"])
+@app.route("/add_project", methods=["GET", "POST"])
 def add_project():
     if request.method == "POST":
+        print("mentii")
         project_name = request.form["project_name"]
         owner_name = request.form["owner_name"]
         notes = request.form["notes"]
@@ -79,13 +80,16 @@ def add_project():
             "end_stage": end_stage
             }
 
-
-        # Run SQL
-        db.session.execute(text(sql), params)
-        # Commit changes
-        db.session.commit()
-        flash("Projektin tiedot lisätty onnistuneesti.")
-
+        try:
+            # Run SQL
+            db.session.execute(text(sql), params)
+            # Commit changes
+            db.session.commit()
+            flash("Project added success")
+        except:
+            flash("Something went wrong")
+    else:
+        print("sdfsfd")
     return redirect("/projects")
 
 

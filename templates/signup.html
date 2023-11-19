@@ -1,0 +1,31 @@
+<!-- signup.html -->
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekisteröidy</title>
+</head>
+<body>
+    <h2>Rekisteröidy</h2>
+    <form method="post" action="/add_new_user">
+        <label for="username">Käyttäjänimi:</label>
+        <input type="text" name="username" required><br>
+
+        <label for="password">Salasana:</label>
+        <input type="password" name="password" required><br>
+
+        <input type="submit" value="Rekisteröidy">
+        <a href="/">Siirry kirjautumiseen</a>
+    </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

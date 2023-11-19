@@ -4,8 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projektit</title>
-    <style>
-        a.submit-link {
+    <style>    
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 40px;
+            text-align: left;
+            margin-right: 75%; /* Lisätty margin-left sijoittamaan lomake näytön oikeaan reunaan */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, textarea {
+            width: calc(100% - 16px);
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
             display: inline-block;
             padding: 10px 20px;
             font-size: 12px;
@@ -17,10 +36,21 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        body {
-            font-family: 'Courier New', monospace;
-            margin: 40px;
-            text-align: left;
+
+        input[readonly] {
+            background-color: #eee;
+        }
+        a.submit-link {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 12px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #4CAF50; /* Vihreä väri */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
         button {
@@ -58,32 +88,33 @@
             </ul>
         {% endif %}
     {% endwith %}
-    <p>Olet kirjautunut nimellä {{ session.username }}</p>
-    <a href="/logout" class="submit-link">Kirjaudu ulos</a>
+    <p>Logged in as {{ session.username }}</p>
+    <a href="/logout" class="submit-link">Log out</a>
+    <a href="/" class="submit-link">To frontpage</a>
     <h1>Add Project</h1>
     <form method="POST" action="/add_project">
         <label for="project_name">Project Name:</label>
         <input type="text" id="project_name" name="project_name" required><br>
 
         <label for="owner_name">Owner Name:</label>
-        <input type="text" id="owner_name" name="owner_name" required><br>
+        <input type="text" id="owner_name" name="owner_name" value="{{session.username}}" readonly><br>
 
         <label for="notes">Notes:</label>
         <textarea id="notes" name="notes"></textarea><br>
 
         <label for="start_date">Start Date:</label>
-        <input type="date" id="start_date" name="start_date"><br>
+        <input type="date" id="start_date" name="start_date" required><br>
 
         <label for="start_stage">Start stage:</label>
-        <input type="text" id="stage" name="start_stage" required><br>
+        <input type="number" id="stage" name="start_stage" value=1 required><br>
+        
+        <label for="end_stage">Number of stages:</label>
+        <input type="number" id="stage" name="end_stage" required><br>
 
-        <label for="end_stage">End Stage:</label>
-        <input type="int" id="stage" name="end_stage" required><br>
-
-        <button type="submit">Add Project</button>
+        <input type="submit" value="Add project">
     </form>
 {% else %}
-    <a href="/" class="submit-link">Jotain meni vikaan, siirry etusivulle</a>
+    <a href="/" class="submit-link">Log in</a>
 {% endif %}
 <button class="toggle-btn" onclick="toggleDarkMode()">☀️/🌑</button>
     <script>

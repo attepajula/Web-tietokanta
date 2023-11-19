@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tervetuloa</title>
+    <title>Atte MRP1</title>
     <style>
         a.submit-link {
             display: inline-block;
@@ -93,17 +93,17 @@
     {% endwith %}
     
     {% if session.username %}
-        <p>Olet kirjautunut nimellä {{ session.username }}</p>
-        <a href="/logout" class="submit-link">Kirjaudu ulos</a>
-        <a href="/projects" class="submit-link">Siirry projekteihin</a>
+        <p>Logged in as {{ session.username }}</p>
+        <a href="/logout" class="submit-link">Log out</a>
+        <a href="/projects" class="submit-link">To the projects</a>
     {% else %}
-        </p><a href="/signup" class="submit-link">Siirry rekisteröitymiseen</a>
+        </p><a href="/signup" class="submit-link">Register</a>
         <form action="/login" method="POST">
-            <p>Tunnus:<br>
+            <p>Username:<br>
             <input type="text" name="username"></p>
-            <p>Salasana:<br>
+            <p>Password:<br>
             <input type="password" name="password"></p>
-            <input type="submit" value="Kirjaudu">
+            <input type="submit" value="Log in">
         </form>
     {% endif %}
     <button class="toggle-btn" onclick="toggleDarkMode()">☀️/🌑</button>
