@@ -18,8 +18,6 @@ def create_virtual_environment(venv_path="venv"):
     except Exception as e:
         print(f"Virhe: {e}")
 
-
-
 def generate_hash():
     # Generate token
      return secrets.token_hex(16)
@@ -28,7 +26,7 @@ def create_env_file():
     # Check if .env is available
     if not os.path.exists(".env"):
         # Ask database URL
-        database_url = input("Anna psql-tietokannan osoite: ")
+        database_url = input("LUO UUSI TIETOKANTA avaamalla psql: CREATE DATABASE uusi_tietokanta; \nAnna psql-tietokannan osoite: ")
         secret_key = generate_hash()
 
         # Add env variables to .env
