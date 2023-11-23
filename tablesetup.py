@@ -6,13 +6,13 @@ from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
-# Haetaan tietokanta-URI ympäristömuuttujasta
+# Retrieve the database URI from the environment variable
 database_url = getenv("DATABASE_URL")
 
-# Luodaan SQLAlchemy-yhteys
+# Create an SQLAlchemy connection
 engine = create_engine(database_url)
 
-# Määritellään tietokantamalli (malli)
+# Define the database model
 Base = declarative_base()
 
 class Project(Base):
