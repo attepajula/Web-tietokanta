@@ -8,7 +8,7 @@ Tietokantasovelluksesta puuttuu vielä kokonaan projektien hallinta, materiaalin
 
 ## ohjeet
 
-Kopioi repo omalle koneellesi johonkin johonkin sopivaan hakemistoon (git clone git@github.com:attepajula/Web-tietokanta.git). Aja appsetup.py aluksi. Sitten aja tablesetup.py.
+Kopioi repo omalle koneellesi johonkin johonkin sopivaan hakemistoon (git clone git@github.com:attepajula/Web-tietokanta.git). Aja appsetup.py aluksi. Sitten aja tablesetup.py VIRTUAALIYMPÄRISTÖSSÄ.
 
 Todennäköisesti virtuaaliympäristö ei jää sinulle päälle, joten käynnistä se itse uudestaan "source venv/bin/activate", ennekuin ajat "flask run --reload"
 
