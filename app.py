@@ -14,7 +14,6 @@ app.secret_key = getenv("SECRET_KEY")
 app.logger.setLevel(logging.INFO)
 db = SQLAlchemy(app)
 
-
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
@@ -30,14 +29,14 @@ def login():
         user = result.fetchone()
 
         if not user:
-            flash("Virheelliset kirjautumistiedot", "error")
+            flash("Login failed", "error")
         else:
             hash_value = user.password
             if check_password_hash(hash_value, password):
-                session["username"] = username  # Tallenna käyttäjänimi sessioon
-                flash("Kirjautuminen onnistui", "success")
+                session["username"] = username
+                flash("Login successful", "success")
             else:
-                flash("Virheelliset kirjautumistiedot", "error")
+                flash("Login failed", "error")
 
     return redirect("/")
 
@@ -91,8 +90,6 @@ def add_project():
             flash("Project added")
         except:
             flash("Something went wrong")
-    else:
-        print("sdfsfd")
     return redirect("/projects")
 
 @app.route("/logout")
