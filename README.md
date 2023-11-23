@@ -1,5 +1,5 @@
 Valitsen aiheekseni resurssienhallinnan työkalun, koska olen tehnyt töitä SAP MRP:n parissa, niin aihe tuntuu luontevalta.
-Sovelluksessani käyttäjä voi lisätä luoda tarpeita eri resursseille, lisätä materiaaleja fyysisiin sijainteihin ja 
+Sovelluksessani käyttäjä voi lisätä ja luoda tarpeita eri resursseille, lisätä materiaaleja fyysisiin sijainteihin ja 
 allokoida niitä erilaisiin projekteihin. Käyttäjä voi myös käynnistää projekteja, jotka kuluttavat resursseja. Rerursseille voi 
 asettaa erilaisia ominaisuuksia määrän ja tarpeiden/varauksien lisäksi kuten muistiinpanoja ja päivämääriä. Käyttäjille voi 
 asettaa erilaisia oikeuksia. 
@@ -12,4 +12,4 @@ Kopioi repo omalle koneellesi johonkin johonkin sopivaan hakemistoon (git clone 
 
 Todennäköisesti virtuaaliympäristö ei jää sinulle päälle, joten käynnistä se itse uudestaan "source venv/bin/activate", ennekuin ajat "flask run --reload"
 
-Jos appsetup.py ei onnistu virtuaaliympäristön luomisessa, niin luo se käsin: "python3 -m venv venv", "source venv/bin/activate". Sitten aja komento "pip3 install werkzeug python-dotenv flask" virtuaaliympäristössä, jonka jälkeen pääset ajamaan tablesetup.py ja luomaan palvelimen "flask run --reload".
+Jos appsetup.py ei onnistu virtuaaliympäristön luomisessa, niin luo se käsin: "python3 -m venv venv", "source venv/bin/activate". Sitten aja komento "pip3 install werkzeug python-dotenv flask psycopg2 sqlalchemy flask_sqlalchemy" virtuaaliympäristössä, jonka jälkeen pääset ajamaan tablesetup.py ja luomaan palvelimen "flask run --reload".
