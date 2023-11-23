@@ -6,7 +6,7 @@ asettaa erilaisia oikeuksia.
 
 Tietokantasovelluksesta puuttuu vielä kokonaan projektien hallinta, materiaalinhallinta, projektikohtaiset materiaalin tarpeet ja mahdollisuus jakaa projekteja toiselle käyttäjälle, sekä lokit.
 
-#Ohjeet
+## ohjeet
 
 Kopioi repo omalle koneellesi johonkin johonkin sopivaan hakemistoon (git clone git@github.com:attepajula/Web-tietokanta.git). Aja appsetup.py aluksi. Sitten aja tablesetup.py.
 
