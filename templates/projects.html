@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projektit</title>
-    <style>    
+    <title>Projects</title>
+    <style>
         body {
             font-family: 'Courier New', monospace;
             margin: 40px;
@@ -124,7 +124,7 @@
         <input type="submit" value="Add project">
     </form>
 
-    <form method="GET" action="/show_project">
+    <form method="POST" action="/show_project">
         <label for="project_select">Choose a project:</label>
         <select id="project_select" name="selected_project" required>
             {% for project in projects %}
@@ -134,6 +134,12 @@
         <br>
         <input type="submit" value="Show">
     </form>
+
+    {% if data %}
+
+
+    
+    {% endif %}
 {% else %}
     <a href="/" class="submit-link">Log in</a>
 {% endif %}

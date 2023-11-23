@@ -103,7 +103,7 @@ def signup():
 
 @app.route("/show_project", methods=["POST", "GET"])
 def show_project():
-    if request.method == "POST":
+    if request.method == "GET":
         project = request.form["selected_project"]
         sql = "SELECT * FROM projects WHERE project_name = :project_name"
         try:
