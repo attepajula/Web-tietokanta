@@ -1,28 +1,24 @@
 import os
 import secrets
-import sys
+import venv
 import subprocess
-import platform
 
 def create_virtual_environment(venv_path="venv"):
-    """
-    Luo virtuaaliympäristön ja asentaa tarvittavat kirjastot.
-
-    :param venv_path: Polku virtuaaliympäristölle (oletusarvo: "venv").
-    """
     try:
-        # Käytä platform-moduulia oikean aktivoimiskomennon luomiseen
-        activate_script = "activate" if platform.system() == "Windows" else "activate"
-        activate_path = f"{venv_path}/bin/{activate_script}" if platform.system() != "Windows" else f"{venv_path}/Scripts/{activate_script}"
+        venv.create(venv_path, with_pip=True)
 
-        # Luo virtuaaliympäristö
-        subprocess.run([sys.executable, "-m", "venv", venv_path], check=True)
+        activate_script = os.path.join(venv_path, "bin", "activate")
+        
+        # Suorita activate-skripti ja asenna paketit käyttäen täyttä polkua pip-komentoon
+        os.system(f"source {activate_script} && {venv_path}/bin/pip install --upgrade pip")
+        install_required_libraries()
 
-        # Aktivoi virtuaaliympäristö
-        subprocess.run(f"source {activate_path}", check=True, shell=True)
+        print("Virtuaaliympäristö aktivoitu ja paketit asennettu onnistuneesti.")
 
-    except subprocess.CalledProcessError as e:
+    except Exception as e:
         print(f"Virhe: {e}")
+
+
 
 def generate_hash():
     # Generate token
@@ -45,11 +41,12 @@ def create_env_file():
         print(".env-tiedosto on jo olemassa.")
 
 def install_required_libraries():
-    os.system("pip3 install werkzeug")
-    os.system("pip3 install python-dotenv")
-    os.system("pip3 install flask")
+    venv_path = "venv"
+    subprocess.run([f"{venv_path}/bin/python", "-m", "pip", "install", "werkzeug"])
+    subprocess.run([f"{venv_path}/bin/python", "-m", "pip", "install", "python-dotenv"])
+    subprocess.run([f"{venv_path}/bin/python", "-m", "pip", "install", "flask"])
+
 
 if __name__ == "__main__":
     create_env_file()
     create_virtual_environment()
-    install_required_libraries()
