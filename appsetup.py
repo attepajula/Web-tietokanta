@@ -47,6 +47,7 @@ def install_required_libraries():
     subprocess.run([f"{venv_path}/bin/python", "-m", "pip", "install", "flask"])
     subprocess.run([f"{venv_path}/bin/python", "-m", "pip", "install", "sqlalchemy"])
     subprocess.run([f"{venv_path}/bin/python", "-m", "pip", "install", "flask_sqlalchemy"])
+    subprocess.run([f"{venv_path}/bin/python", "-m", "pip", "install", "psycopg2"])
 
 
 if __name__ == "__main__":
