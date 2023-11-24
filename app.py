@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, session, flash
+from flask import Flask, render_template, redirect, request, session, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from os import getenv
@@ -101,32 +101,52 @@ def logout():
 def signup():
     return render_template("signup.html")
 
-@app.route("/show_project", methods=["POST", "GET"])
+@app.route("/show_project", methods=["GET", "POST"])
 def show_project():
-    if request.method == "GET":
+    if request.method == "POST":
         project = request.form["selected_project"]
-        sql = "SELECT * FROM projects WHERE project_name = :project_name"
-        try:
-            data = db.session.execute(text(sql), {"project_name": project}).fetchall()
-            app.logger.info("Query executed successfully.")
-            app.logger.info(f"Data: {data}")
-        except Exception as e:
-            app.logger.error(f"Error executing query: {str(e)}")
+        session["selected_project"] = project
+    elif request.method == "GET":
+        project = session.get("selected_project")
     else:
-        app.logger.info("Request method is not POST.")
-    return redirect("/projects")
+        app.logger.info("Request method is invalid")
+    sql = "SELECT * FROM projects WHERE owner_name = :owner_name AND project_name = :project_name;"
+    try:
+        data = db.session.execute(text(sql), {"project_name": project, "owner_name": session.get("username")}).fetchone()
+        session["selected_data"] = list(data)
+        app.logger.info("Query executed successfully.")
+        app.logger.info(f"Data: {data}")
+    except Exception as e:
+        app.logger.error(f"Error executing query: {str(e)}")
+    return projects(data=data)
 
 @app.route("/projects", methods=["GET"])
-def projects():
-    if request.method == "GET":
-        username = session.get("username")
-        sql = "SELECT project_name FROM projects WHERE owner_name = :username;"
-        try:
-            projects = db.session.execute(text(sql), {"username": username}).fetchall()
-        except:
-            projects = []
-            flash("No projects yet", "error")
-    return render_template("projects.html", projects=projects)
+def projects(data=None):
+    username = session.get("username")
+    sql = "SELECT project_name FROM projects WHERE owner_name = :username;"
+    try:
+        projects = db.session.execute(text(sql), {"username": username}).fetchall()
+    except:
+        projects = []
+        flash("No projects yet", "error")
+    return render_template("projects.html", projects=projects, data=data)
+
+@app.route("/confirm")
+def confirm():
+    data = session.get("selected_data")
+    sql = "UPDATE projects SET start_stage = :start_stage WHERE owner_name = :owner_name AND project_name = :project_name;"
+    app.logger.info(f"try to confirm: {data}")
+    try:
+        db.session.execute(text(sql), {"start_stage": data[5]+1, "project_name":data[1], "owner_name":data[2]})
+        db.session.commit()
+        flash("Operation confirmed", "success")
+    except:
+        flash("Operation failed", "error")
+    return redirect(url_for("show_project"))
+
+@app.route("/resources")
+def resources():
+    return render_template("resources.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

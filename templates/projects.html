@@ -25,7 +25,7 @@
     
         input, textarea, select {
             width: calc(100% - 16px);
-            padding: 8px;
+            padding: 6px;
             margin-bottom: 10px;
             box-sizing: border-box;
         }
@@ -44,7 +44,7 @@
         }
     
         input[readonly] {
-            background-color: #eee;
+            background-color: #fff;
         }
     
         a.submit-link {
@@ -67,6 +67,28 @@
             position: absolute;
             top: 0;
             right: 0;
+        }
+
+        table {
+            width: 50%;
+            margin-right: 40px;
+            margin-left: auto;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        progress {
+            width: 100%;
+        }   
+
+        div {
+            width: 50%;
+            margin-top: 10px;
+            margin-right: 40px;
+            margin-left: auto;
         }
     
         .dark-mode {
@@ -136,10 +158,45 @@
     </form>
 
     {% if data %}
+        <!-- Chart -->
+        <table border="1">
+            
+            <tr>
+                <td>Project Name</td>
+                <td>{{ data[1] }}</td>
+            </tr>
+            <tr>
+                <td>Owner Name</td>
+                <td>{{ data[2] }}</td>
+            </tr>
+            <tr>
+                <td>Notes</td>
+                <td>{{ data[3] }}</td>
+            </tr>
+            <tr>
+                <td>Start Date</td>
+                <td>{{ data[4] }}</td>
+            </tr>
+            <tr>
+                <td>Current Stage</td>
+                <td>{{ data[5] }}</td>
+            </tr>
+            <tr>
+                <td>Total Stages</td>
+                <td>{{ data[6] }}</td>
+            </tr>
+        </table>
 
-
-    
+        <!-- Meter -->
+        <div>
+            <a>Current Stage: {{ data[5] }}</a>
+            <a href="/resources.html" class="submit-link">Resources</a>
+            <a href="/confirm" class="submit-link">Confrim operation</a>
+            <progress value="{{ data[5] }}" max="{{ data[6] }}"></progress>
+        </div>
     {% endif %}
+
+
 {% else %}
     <a href="/" class="submit-link">Log in</a>
 {% endif %}
