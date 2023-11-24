@@ -1,0 +1,1 @@
+Viesti: Hienosti toimii, mutta vaati pientä harrastuneisuutta pystyttää toinen tietokanta, koska itselläni oli käytössä myös samannimisiä tauluja. Ohjeet eivät toimi tältä osin sen vuoksi: psql < schema.sql --> psql < -U [käyttäjänimi] -d [testitietokanta] -f schema.sql
