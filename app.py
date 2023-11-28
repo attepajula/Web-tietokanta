@@ -88,7 +88,8 @@ def add_project():
             # Commit changes
             db.session.commit()
             flash("Project added")
-        except:
+        except Exception as e:
+            app.logger.error(f"Error executing query: {str(e)}")
             flash("Something went wrong")
     return redirect("/projects")
 
