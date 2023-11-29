@@ -104,16 +104,18 @@ def signup():
 
 @app.route("/show_project", methods=["GET", "POST"])
 def show_project():
+    username = session.get("username")
     if request.method == "POST":
-        project = request.form["selected_project"]
-        session["selected_project"] = project
+        project_id = request.form["selected_project"]
+        session["selected_project"] = project_id
     elif request.method == "GET":
-        project = session.get("selected_project")
+        project_id = session.get("selected_project")
     else:
         app.logger.info("Request method is invalid")
-    sql = "SELECT * FROM projects WHERE owner_name = :owner_name AND project_name = :project_name;"
+
+    sql = "SELECT * FROM projects WHERE project_id = :project_id;"
     try:
-        data = db.session.execute(text(sql), {"project_name": project, "owner_name": session.get("username")}).fetchone()
+        data = db.session.execute(text(sql), {"project_id": project_id[0]}).fetchone()
         session["selected_data"] = list(data)
         app.logger.info("Query executed successfully.")
         app.logger.info(f"Data: {data}")
@@ -124,13 +126,19 @@ def show_project():
 @app.route("/projects", methods=["GET"])
 def projects(data=None):
     username = session.get("username")
-    sql = "SELECT project_name FROM projects WHERE owner_name = :username;"
+    sql = "SELECT project_name, project_id FROM projects WHERE owner_name = :username;"
+    sql2 = "SELECT project_name, project_id FROM permissions WHERE username = :username;"
     try:
         projects = db.session.execute(text(sql), {"username": username}).fetchall()
-    except:
-        projects = []
+        others_projects = db.session.execute(text(sql2), {"username": username}).fetchall()
+        combined_projects = projects + others_projects
+        app.logger.info(combined_projects)
+
+    except Exception as e:
+        app.logger.error(f"Error executing query: {str(e)}")
+        combined_projects = []
         flash("No projects yet", "error")
-    return render_template("projects.html", projects=projects, data=data)
+    return render_template("projects.html", projects=combined_projects, data=data)
 
 @app.route("/confirm")
 def confirm():
