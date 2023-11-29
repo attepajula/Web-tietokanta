@@ -104,7 +104,6 @@ def signup():
 
 @app.route("/show_project", methods=["GET", "POST"])
 def show_project():
-    username = session.get("username")
     if request.method == "POST":
         project_id = request.form["selected_project"]
         session["selected_project"] = project_id
@@ -143,15 +142,35 @@ def projects(data=None):
 @app.route("/confirm")
 def confirm():
     data = session.get("selected_data")
-    sql = "UPDATE projects SET start_stage = :start_stage WHERE owner_name = :owner_name AND project_name = :project_name;"
-    app.logger.info(f"try to confirm: {data}")
-    try:
-        db.session.execute(text(sql), {"start_stage": data[5]+1, "project_name":data[1], "owner_name":data[2]})
-        db.session.commit()
-        flash("Operation confirmed", "success")
-    except:
-        flash("Operation failed", "error")
-    return redirect(url_for("show_project"))
+    username = session.get("username")
+    if username == data[2]:
+        sql = "UPDATE projects SET start_stage = :start_stage WHERE owner_name = :owner_name AND project_name = :project_name;"
+        app.logger.info(f"try to confirm: {data}")
+        try:
+            db.session.execute(text(sql), {"start_stage": data[5]+1, "project_name":data[1], "owner_name":data[2]})
+            db.session.commit()
+            flash("Operation confirmed", "success")
+        except:
+            flash("Operation failed", "error")
+        return redirect(url_for("show_project"))
+    else:
+        sql = "SELECT can_modify FROM permissions WHERE username = :username;"
+        can_modify = db.session.execute(text(sql), {"username":username}).fetchone()
+        app.logger.info(can_modify[0])
+        if can_modify[0] == True:
+            sql = "UPDATE projects SET start_stage = :start_stage WHERE owner_name = :owner_name AND project_name = :project_name;"
+            app.logger.info(f"try to confirm someone else's: {data}")
+            try:
+                db.session.execute(text(sql), {"start_stage": data[5]+1, "project_name":data[1], "owner_name":data[2]})
+                db.session.commit()
+                flash("Operation confirmed", "success")
+            except:
+                flash("Operation failed", "error")
+            return redirect(url_for("show_project"))
+        else:
+            flash("No permission", "error")
+            return redirect(url_for("show_project"))
+
 
 @app.route("/resources")
 def resources():

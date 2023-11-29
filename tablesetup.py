@@ -1,6 +1,6 @@
 from os import getenv
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, Column, Integer, String, Text, Date
+from sqlalchemy import create_engine, Column, Integer, String, Text, Date, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -38,9 +38,10 @@ class User(Base):
     
     permission_id = Column(Integer, primary_key=True)
     project_id = Column(Integer, primary_key=True)
-    username = Column(String(50), nullable=False, unique=True)
+    username = Column(String(50), nullable=False)
     project_name = Column(String(255), nullable=False)
     project_owner_name = Column(String(50), nullable=False)
+    can_modify = Column(Boolean)
 
 # Create tables
 Base.metadata.create_all(engine)
