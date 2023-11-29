@@ -104,6 +104,7 @@ def signup():
 
 @app.route("/show_project", methods=["GET", "POST"])
 def show_project():
+    username = session.get("username")
     if request.method == "POST":
         project_id = request.form["selected_project"]
         session["selected_project"] = project_id
@@ -111,6 +112,11 @@ def show_project():
         project_id = session.get("selected_project")
     else:
         app.logger.info("Request method is invalid")
+    if not user_has_permission(username, project_id):
+        # Input is manipulated:
+        app.logger.warning("Unauthorized access attempt.")
+        flash("Unauthorized access attempt")
+        return redirect("/projects")
 
     sql = "SELECT * FROM projects WHERE project_id = :project_id;"
     try:
@@ -171,6 +177,17 @@ def confirm():
             flash("No permission", "error")
             return redirect(url_for("show_project"))
 
+def user_has_permission(username, project_id):
+    sql = "SELECT project_id FROM projects WHERE owner_name = :owner_name;"
+    try:
+        result = db.session.execute(text(sql), {"owner_name": username}).fetchall()
+        allowed_projects = [int(row[0]) for row in result]
+        app.logger.info("User checked successfully.")
+    except Exception as e:
+        app.logger.error(f"Error executing query: {str(e)}")
+    app.logger.info(project_id)
+    app.logger.info(allowed_projects)
+    return int(project_id) in allowed_projects
 
 @app.route("/resources")
 def resources():
