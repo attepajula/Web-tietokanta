@@ -185,6 +185,16 @@ def user_has_permission(username, project_id):
         app.logger.info("User checked successfully.")
     except Exception as e:
         app.logger.error(f"Error executing query: {str(e)}")
+
+    sql2 = "SELECT project_id FROM permissions WHERE username = :username;"
+    try:
+        result = db.session.execute(text(sql2), {"username": username}).fetchall()
+        projects_permissons = [int(row[0]) for row in result]
+        app.logger.info("User checked successfully.")
+    except Exception as e:
+        app.logger.error(f"Error executing query: {str(e)}")
+
+    allowed_projects += projects_permissons
     app.logger.info(project_id)
     app.logger.info(allowed_projects)
     return int(project_id) in allowed_projects
