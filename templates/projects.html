@@ -143,6 +143,13 @@
         <label for="end_stage">Number of stages:</label>
         <input type="number" id="stage" name="end_stage" required><br>
 
+        <label for="inventory_select">Select an inventory:</label>
+        <select id="inventory_select" name="selected_inventory" required>
+            {% for inventory in inventories %}
+                <option value="{{ inventory.inventory_id }}">{{ inventory.inventory_name }}</option>
+            {% endfor %}
+        </select>
+        <br>
         <input type="submit" value="Add project">
     </form>
 

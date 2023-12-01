@@ -57,21 +57,42 @@ def add_new_user():
       
     return redirect("/signup")
 
+@app.route("/add_inventory", methods=["POST"])
+def add_inventory():
+    if request.method == "POST":
+        inventory_name = request.form["inventory_name"]
+        owner_name = request.form["owner_name"]
+        notes = request.form["notes"]
+
+        # query
+        sql = "INSERT INTO inventories (owner_name, inventory_name, notes) VALUES (:owner_name, :inventory_name, :notes)"
+
+        try:
+            # Run SQL
+            db.session.execute(text(sql), {"owner_name": owner_name, "inventory_name": inventory_name, "notes": notes})
+            # Commit changes
+            db.session.commit()
+            flash("Inventory added")
+        except Exception as e:
+            app.logger.error(f"Error executing query: {str(e)}")
+            flash("Something went wrong")
+    return redirect("/projects")
+
 @app.route("/add_project", methods=["POST"])
 def add_project():
     if request.method == "POST":
-        print("mentii")
         project_name = request.form["project_name"]
         owner_name = request.form["owner_name"]
         notes = request.form["notes"]
         start_date = request.form["start_date"]
         start_stage = request.form["start_stage"]
         end_stage = request.form["end_stage"]
+        inventory_id = request.form["selected_inventory"]
 
         # query
         sql = """
-            INSERT INTO projects (project_name, owner_name, notes, start_date, start_stage, end_stage)
-            VALUES (:project_name, :owner_name, :notes, :start_date, :start_stage, :end_stage)
+            INSERT INTO projects (project_name, owner_name, notes, start_date, start_stage, end_stage, inventory_id)
+            VALUES (:project_name, :owner_name, :notes, :start_date, :start_stage, :end_stage, :inventory_id)
         """
         params = {
             "project_name": project_name,
@@ -79,9 +100,10 @@ def add_project():
             "notes": notes,
             "start_date": start_date,
             "start_stage": start_stage,
-            "end_stage": end_stage
+            "end_stage": end_stage,
+            "inventory_id": inventory_id
             }
-
+        
         try:
             # Run SQL
             db.session.execute(text(sql), params)
@@ -143,7 +165,18 @@ def projects(data=None):
         app.logger.error(f"Error executing query: {str(e)}")
         combined_projects = []
         flash("No projects yet", "error")
-    return render_template("projects.html", projects=combined_projects, data=data)
+
+    sql2 = "SELECT inventory_name, inventory_id FROM inventories WHERE owner_name = :username;"
+    try:
+        inventories = db.session.execute(text(sql2), {"username": username}).fetchall()
+        app.logger.info(inventories)
+
+    except Exception as e:
+        app.logger.error(f"Error executing query: {str(e)}")
+        inventories = []
+        flash("No inventories yet", "error")
+
+    return render_template("projects.html", inventories=inventories, projects=combined_projects, data=data)
 
 @app.route("/confirm")
 def confirm():
