@@ -29,8 +29,8 @@ class Project(Base):
 class User(Base):
     __tablename__ = "users"
     user_id = Column(Integer, primary_key=True)
-    username = Column(String(50), nullable=False, unique=True)
-    password = Column(String(255), nullable=False)
+    username = Column(String(50), nullable=False, unique=True, info={'min_length': 3})
+    password = Column(String(255), nullable=False, info={'min_length': 8})
 
 class Permission(Base):
     __tablename__ = "permissions"

@@ -45,7 +45,9 @@ def add_new_user():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-
+        if len(username) < 3 or len(password) < 8:
+            flash("Please choose a username and password that are each at least 3 and 8 characters long, respectively.", "error")
+            return redirect("/signup")
         hash_value = generate_password_hash(password)
         sql = "INSERT INTO users (username, password) VALUES (:username, :password)"
         try:
