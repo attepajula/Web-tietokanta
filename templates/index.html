@@ -95,7 +95,8 @@
     {% if session.username %}
         <p>Logged in as {{ session.username }}</p>
         <a href="/logout" class="submit-link">Log out</a>
-        <a href="/projects" class="submit-link">To the projects</a>
+        <a href="/projects" class="submit-link">Projects</a>
+        <a href="/resources" class="submit-link">Inventories</a>
     {% else %}
         </p><a href="/signup" class="submit-link">Register</a>
         <form action="/login" method="POST">

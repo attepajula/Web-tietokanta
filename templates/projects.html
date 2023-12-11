@@ -198,7 +198,9 @@
         <div>
             <a>Current Stage: {{ data[5] }}</a>
             <a href="/resources.html" class="submit-link">Resources</a>
-            <a href="/confirm" class="submit-link">Confrim operation</a>
+            {% if data[5] < data[6] %}
+                <a href="/confirm" class="submit-link">Confrim operation</a>
+            {% endif %}
             {% if data[2] == session.username %}
                 <a href="/permission" class="submit-link">Grant permissions</a>
             {% endif %}
