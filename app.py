@@ -184,23 +184,10 @@ def projects(data=None):
 def confirm():
     data = session.get("selected_data")
     username = session.get("username")
-    if username == data[2]:
-        sql = "UPDATE projects SET start_stage = :start_stage WHERE owner_name = :owner_name AND project_name = :project_name;"
-        app.logger.info(f"try to confirm: {data}")
-        try:
-            db.session.execute(text(sql), {"start_stage": data[5]+1, "project_name":data[1], "owner_name":data[2]})
-            db.session.commit()
-            flash("Operation confirmed", "success")
-        except:
-            flash("Operation failed", "error")
-        return redirect(url_for("show_project"))
-    else:
-        sql = "SELECT can_modify FROM permissions WHERE username = :username;"
-        can_modify = db.session.execute(text(sql), {"username":username}).fetchone()
-        app.logger.info(can_modify[0])
-        if can_modify[0] == True:
+    if data[5] < data[6]:
+        if username == data[2]:
             sql = "UPDATE projects SET start_stage = :start_stage WHERE owner_name = :owner_name AND project_name = :project_name;"
-            app.logger.info(f"try to confirm someone else's: {data}")
+            app.logger.info(f"try to confirm: {data}")
             try:
                 db.session.execute(text(sql), {"start_stage": data[5]+1, "project_name":data[1], "owner_name":data[2]})
                 db.session.commit()
@@ -209,8 +196,25 @@ def confirm():
                 flash("Operation failed", "error")
             return redirect(url_for("show_project"))
         else:
-            flash("No permission", "error")
-            return redirect(url_for("show_project"))
+            sql = "SELECT can_modify FROM permissions WHERE username = :username;"
+            can_modify = db.session.execute(text(sql), {"username":username}).fetchone()
+            app.logger.info(can_modify[0])
+            if can_modify[0] == True:
+                sql = "UPDATE projects SET start_stage = :start_stage WHERE owner_name = :owner_name AND project_name = :project_name;"
+                app.logger.info(f"try to confirm someone else's: {data}")
+                try:
+                    db.session.execute(text(sql), {"start_stage": data[5]+1, "project_name":data[1], "owner_name":data[2]})
+                    db.session.commit()
+                    flash("Operation confirmed", "success")
+                except:
+                    flash("Operation failed", "error")
+                return redirect(url_for("show_project"))
+            else:
+                flash("No permission", "error")
+                return redirect(url_for("show_project"))
+    else: 
+        flash("Project completed", "error")
+        return redirect(url_for("show_project"))
 
 def user_has_permission(username, project_id):
     sql = "SELECT project_id FROM projects WHERE owner_name = :owner_name;"
