@@ -136,7 +136,7 @@ def show_project():
         project_id = session.get("selected_project")
     else:
         app.logger.info("Request method is invalid")
-    if not user_has_permission(username, project_id):
+    if not user_has_permission_project(username, project_id):
         # Input is manipulated:
         app.logger.warning("Unauthorized access attempt.")
         flash("Unauthorized access attempt")
@@ -216,7 +216,7 @@ def confirm():
         flash("Project completed", "error")
         return redirect(url_for("show_project"))
 
-def user_has_permission(username, project_id):
+def user_has_permission_project(username, project_id):
     sql = "SELECT project_id FROM projects WHERE owner_name = :owner_name;"
     try:
         result = db.session.execute(text(sql), {"owner_name": username}).fetchall()
@@ -238,6 +238,19 @@ def user_has_permission(username, project_id):
     app.logger.info(allowed_projects)
     return int(project_id) in allowed_projects
 
+def user_has_permission_remove(username, permission_id):
+    sql = "SELECT permission_id FROM permissions WHERE project_owner_name = :project_owner_name;"
+    try:
+        result = db.session.execute(text(sql), {"project_owner_name": username}).fetchall()
+        allowed_permissons = [int(row[0]) for row in result]
+        app.logger.info("User checked successfully.")
+    except Exception as e:
+        app.logger.error(f"Error executing query: {str(e)}")
+
+    app.logger.info(permission_id)
+    app.logger.info(allowed_permissons)
+    return int(permission_id) in allowed_permissons
+
 @app.route("/resources")
 def resources():
     return render_template("resources.html")
@@ -246,10 +259,11 @@ def resources():
 def permission():
     data = session.get("selected_data")
     project_owner_name = session.get("username")
+    project_id = data[0]
     app.logger.info(f"Logged in as: {project_owner_name}")
-    sql = "SELECT username, project_name, permission_id FROM permissions WHERE project_owner_name = :project_owner_name;"
+    sql = "SELECT username, project_name, permission_id FROM permissions WHERE project_owner_name = :project_owner_name AND project_id = :project_id;"
     try:
-        permissions = db.session.execute(text(sql), {"project_owner_name":  project_owner_name}).fetchall()
+        permissions = db.session.execute(text(sql), {"project_owner_name":  project_owner_name, "project_id":  project_id}).fetchall()
     except Exception as e:
         app.logger.error(f"Error executing query: {str(e)}")
         permissions = []
@@ -301,6 +315,13 @@ def remove_permission():
     if request.method == "POST":
         permission_id = request.form["selected_permission"]
         sql = "DELETE FROM permissions WHERE permission_id = :permission_id;"
+
+    if not user_has_permission_remove(username, permission_id):
+        # Input is manipulated:
+        app.logger.warning("Unauthorized access attempt.")
+        flash("Unauthorized access attempt")
+        return redirect("/permission")
+    
     try:
         db.session.execute(text(sql), {"permission_id": permission_id})
         # Commit changes
