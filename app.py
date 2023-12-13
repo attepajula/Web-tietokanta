@@ -264,6 +264,11 @@ def grant():
         else: 
             can_modify = "false"
 
+        existing_permission = db.session.execute(text("SELECT permission_id FROM permissions WHERE project_id = :project_id AND username = :username"), {"project_id": project_id, "username": username}).fetchone()
+        if existing_permission:
+            flash("Permission already exists for this user and project")
+            return redirect("/permission")
+        
         # query
         sql = "INSERT INTO permissions (project_id, username, project_name, project_owner_name, can_modify) VALUES (:project_id, :username, :project_name, :project_owner_name, :can_modify)"
 
