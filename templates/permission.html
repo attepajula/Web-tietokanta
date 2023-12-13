@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 40px;
+            text-align: left;
+        }
+    
+        form {
+            font-family: 'Courier New', monospace;
+            text-align: left;
+            width: 20%;
+            float: left;
+        }
+    
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    
+        input, textarea, select {
+            width: calc(100% - 16px);
+            padding: 6px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+    
+        input[type="submit"] {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 12px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
+        input[readonly] {
+            background-color: #fff;
+        }
+    
+        a.submit-link {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 12px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
+        button {
+            font-family: 'Courier New', monospace;
+            margin: 40px;
+            text-align: right;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        table {
+            width: 50%;
+            margin-right: 40px;
+            margin-left: auto;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        progress {
+            width: 100%;
+        }   
+
+        div {
+            width: 50%;
+            margin-top: 10px;
+            margin-right: 40px;
+            margin-left: auto;
+        }
+    
+        .dark-mode {
+            background-color: #000;
+            color: #fff;
+        }
+    
+        .toggle-btn {
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #000;
+            padding: 10px;
+            cursor: pointer;
+            outline: none;
+        }
+    </style>
+    
+</head>
+<body>
+{% if session.username %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <p>Logged in as {{ session.username }}</p>
+    <a href="/logout" class="submit-link">Log out</a>
+    <a href="/" class="submit-link">To frontpage</a>
+
+    <h1>Grant a permission</h1>
+    <form method="POST" action="/grant">
+        <label for="project_name">Project name:</label>
+        <input type="text" id="project_name" name="project_name"  value="{{ data[1] }}" readonly><br>
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required=""><br>
+
+        <label for="canModify" style="display: inline;">Can Modify:</label>
+        <input type="checkbox" id="canModify" name="canModify" value="true"><br>
+        
+
+        <input type="submit" value="Done">
+        
+    </form>
+
+{% else %}
+    <a href="/" class="submit-link">Log in</a>
+{% endif %}
+<button class="toggle-btn" onclick="toggleDarkMode()">☀️/🌑</button>
+    <script>
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeEnabled = body.classList.toggle('dark-mode');
+
+            // Set preference
+            setDarkModePreference(darkModeEnabled);
+            }
+
+            function getDarkModePreference() {
+                const darkModeCookie = document.cookie.replace(/(?:(?:^|.*;\s*)darkModeEnabled\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                return darkModeCookie === 'true';
+            }
+
+            function setDarkModePreference(enabled) {
+                document.cookie = `darkModeEnabled=${enabled}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/`;
+            }
+
+            // Set darkmode on if prefered
+            document.addEventListener("DOMContentLoaded", function () {
+                const darkModeEnabled = getDarkModePreference();
+                if (darkModeEnabled) {
+                    document.body.classList.add('dark-mode');
+                }
+            });
+
+    </script>
+</body>
+</html>

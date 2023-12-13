@@ -45,7 +45,7 @@ def add_new_user():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        if len(username) <= 3 or len(password) <= 8:
+        if len(username) < 3 or len(password) < 8:
             flash("Please choose a username and password that are each at least 3 and 8 characters long, respectively.", "error")
             return redirect("/signup")
         hash_value = generate_password_hash(password)
@@ -241,6 +241,43 @@ def user_has_permission(username, project_id):
 @app.route("/resources")
 def resources():
     return render_template("resources.html")
+
+@app.route("/permission")
+def permission():
+    data = session.get("selected_data")
+    return render_template("permission.html", data=data)
+
+@app.route("/grant", methods=["POST"])
+def grant():
+    data = session.get("selected_data")
+    app.logger.info(f"Data: {data}")
+    if request.method == "POST":
+        project_id = data[0]
+        username = request.form["username"]
+        project_name = data[1]
+        project_owner_name = data[2]
+        can_modify = request.form.get("canModify")
+
+        app.logger.info(f"Can modify: {can_modify}")
+        if can_modify == "true":
+            can_modify = "true"
+        else: 
+            can_modify = "false"
+
+        # query
+        sql = "INSERT INTO permissions (project_id, username, project_name, project_owner_name, can_modify) VALUES (:project_id, :username, :project_name, :project_owner_name, :can_modify)"
+
+        try:
+            # Run SQL
+            db.session.execute(text(sql), {"project_id": project_id, "username": username, "project_owner_name": project_owner_name, "project_name": project_name, "can_modify": can_modify})
+            # Commit changes
+            db.session.commit()
+            flash("Permission added")
+        except Exception as e:
+            app.logger.error(f"Error executing query: {str(e)}")
+            flash("Something went wrong")
+
+    return redirect("/permission")
 
 if __name__ == "__main__":
     app.run(debug=True)
