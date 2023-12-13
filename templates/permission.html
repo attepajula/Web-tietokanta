@@ -123,7 +123,7 @@
     <a href="/logout" class="submit-link">Log out</a>
     <a href="/" class="submit-link">To frontpage</a>
 
-    <h1>Grant a permission</h1>
+    <h1>Modify permissions</h1>
     <form method="POST" action="/grant">
         <label for="project_name">Project name:</label>
         <input type="text" id="project_name" name="project_name"  value="{{ data[1] }}" readonly><br>
@@ -137,6 +137,17 @@
 
         <input type="submit" value="Done">
         
+    </form>
+
+    <form method="POST" action="/remove_permission">
+        <label for="permission_select">Choose a permissions:</label>
+        <select id="permission_select" name="selected_permission" required>
+            {% for permission in permissions %}
+                <option value="{{ permission.permission_id }}">{{ permission.project_name, permission.username }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <input type="submit" value="Remove">
     </form>
 
 {% else %}

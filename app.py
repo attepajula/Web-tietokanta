@@ -245,7 +245,17 @@ def resources():
 @app.route("/permission")
 def permission():
     data = session.get("selected_data")
-    return render_template("permission.html", data=data)
+    project_owner_name = session.get("username")
+    app.logger.info(f"Logged in as: {project_owner_name}")
+    sql = "SELECT username, project_name, permission_id FROM permissions WHERE project_owner_name = :project_owner_name;"
+    try:
+        permissions = db.session.execute(text(sql), {"project_owner_name":  project_owner_name}).fetchall()
+    except Exception as e:
+        app.logger.error(f"Error executing query: {str(e)}")
+        permissions = []
+        flash("No permissions yet", "error")
+
+    return render_template("permission.html", data=data, permissions=permissions)
 
 @app.route("/grant", methods=["POST"])
 def grant():
@@ -284,5 +294,24 @@ def grant():
 
     return redirect("/permission")
 
+@app.route("/remove_permission", methods=["POST"])
+def remove_permission():
+    username = session.get("username")
+    
+    if request.method == "POST":
+        permission_id = request.form["selected_permission"]
+        sql = "DELETE FROM permissions WHERE permission_id = :permission_id;"
+    try:
+        db.session.execute(text(sql), {"permission_id": permission_id})
+        # Commit changes
+        db.session.commit()
+        app.logger.info("Query executed successfully.")
+        flash("Permission deleted")
+    except Exception as e:
+        app.logger.error(f"Error executing query: {str(e)}")
+        flash("Something went wrong while deleting permission")
+
+    return redirect("/permission")
+    
 if __name__ == "__main__":
     app.run(debug=True)
