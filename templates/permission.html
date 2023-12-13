@@ -121,7 +121,7 @@
 
     <p>Logged in as {{ session.username }}</p>
     <a href="/logout" class="submit-link">Log out</a>
-    <a href="/" class="submit-link">To frontpage</a>
+    <a href="/projects" class="submit-link">Projects</a>
 
     <h1>Modify permissions</h1>
     <form method="POST" action="/grant">
@@ -140,7 +140,7 @@
     </form>
 
     <form method="POST" action="/remove_permission">
-        <label for="permission_select">Choose a permissions:</label>
+        <label for="permission_select">Choose permissions:</label>
         <select id="permission_select" name="selected_permission" required>
             {% for permission in permissions %}
                 <option value="{{ permission.permission_id }}">{{ permission.project_name, permission.username }}</option>

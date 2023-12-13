@@ -1,3 +1,11 @@
+-- Define the inventories table
+CREATE TABLE IF NOT EXISTS inventories (
+    owner_name VARCHAR(50) NOT NULL UNIQUE,
+    inventory_id SERIAL PRIMARY KEY,
+    inventory_name VARCHAR(255) NOT NULL,
+    notes TEXT
+);
+
 -- Define the projects table
 CREATE TABLE IF NOT EXISTS projects (
     project_id SERIAL PRIMARY KEY,
@@ -25,14 +33,6 @@ CREATE TABLE IF NOT EXISTS permissions (
     project_name VARCHAR(255) NOT NULL,
     project_owner_name VARCHAR(50) NOT NULL,
     can_modify BOOLEAN
-);
-
--- Define the inventories table
-CREATE TABLE IF NOT EXISTS inventories (
-    owner_name VARCHAR(50) NOT NULL UNIQUE,
-    inventory_id SERIAL PRIMARY KEY,
-    inventory_name VARCHAR(255) NOT NULL,
-    notes TEXT
 );
 
 -- Define the inventory_usage table
