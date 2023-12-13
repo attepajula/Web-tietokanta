@@ -334,5 +334,31 @@ def remove_permission():
 
     return redirect("/permission")
     
+@app.route("/delete", methods=["POST"])
+def delete():
+    username = session.get("username")
+    data = session.get("selected_data")
+    project_id = data[0]
+    if request.method == "POST":
+        sql = "DELETE FROM projects WHERE project_id = :project_id;"
+
+    if username != data[2]:
+        # Input is infected:
+        app.logger.warning("Infected access attempt.")
+        flash("Unauthorized")
+        return redirect("/projects")
+    
+    try:
+        db.session.execute(text(sql), {"project_id": project_id})
+        # Commit changes
+        db.session.commit()
+        app.logger.info("Query executed successfully.")
+        flash("Project deleted")
+    except Exception as e:
+        app.logger.error(f"Error executing query: {str(e)}")
+        flash("Something went wrong while deleting project")
+
+    return redirect("/projects")
+
 if __name__ == "__main__":
     app.run(debug=True)
