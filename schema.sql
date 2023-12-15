@@ -1,6 +1,6 @@
 -- Define the inventories table
 CREATE TABLE IF NOT EXISTS inventories (
-    owner_name VARCHAR(50) NOT NULL UNIQUE,
+    owner_name VARCHAR(50) NOT NULL,
     inventory_id SERIAL PRIMARY KEY,
     inventory_name VARCHAR(255) NOT NULL,
     notes TEXT
