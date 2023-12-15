@@ -54,9 +54,10 @@ def add_new_user():
 
 @app.route("/add_inventory", methods=["POST"])
 def add_inventory():
+    username = session.get("username")
     if request.method == "POST":
         inventory_name = request.form["inventory_name"]
-        owner_name = request.form["owner_name"]
+        owner_name = username
         notes = request.form["notes"]
 
         # query
@@ -75,15 +76,16 @@ def add_inventory():
 
 @app.route("/add_project", methods=["POST"])
 def add_project():
+    username = session.get("username")
     if request.method == "POST":
         project_name = request.form["project_name"]
-        owner_name = request.form["owner_name"]
+        owner_name = username
         notes = request.form["notes"]
         start_date = request.form["start_date"]
         start_stage = request.form["start_stage"]
         end_stage = request.form["end_stage"]
         inventory_id = request.form["selected_inventory"]
-
+        
         # query
         sql = """
             INSERT INTO projects (project_name, owner_name, notes, start_date, start_stage, end_stage, inventory_id)
