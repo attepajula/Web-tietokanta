@@ -215,6 +215,10 @@ def confirm():
 def resources():
     return render_template("resources.html")
 
+@app.route("/inventories")
+def inventories():
+    return render_template("inventories.html")
+
 @app.route("/permission")
 def permission():
     data = session.get("selected_data")
