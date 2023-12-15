@@ -4,12 +4,10 @@ allokoida niitä erilaisiin projekteihin. Käyttäjä voi myös käynnistää pr
 asettaa erilaisia ominaisuuksia määrän ja tarpeiden/varauksien lisäksi kuten muistiinpanoja ja päivämääriä. Käyttäjille voi 
 asettaa erilaisia oikeuksia. 
 
-Tietokantasovelluksesta puuttuu vielä kokonaan projektien hallinta, materiaalinhallinta, projektikohtaiset materiaalin tarpeet ja mahdollisuus jakaa projekteja toiselle käyttäjälle, sekä lokit.
+Tietokantasovelluksesta puuttuu vielä kokonaan materiaalinhallinta, projektikohtaiset materiaalin tarpeet, sekä lokit.
 
-## ohjeet
+## Ohjeet
 
-Kopioi repo omalle koneellesi johonkin johonkin sopivaan hakemistoon (git clone git@github.com:attepajula/Web-tietokanta.git). Aja appsetup.py aluksi. Sitten aja tablesetup.py VIRTUAALIYMPÄRISTÖSSÄ.
+Kopioi repo omalle koneellesi johonkin johonkin sopivaan hakemistoon (git clone git@github.com:attepajula/Web-tietokanta.git). Sitten suorita "source venv/bin/activate", "pip install -r requirements.txt" ja "psql -U [käyttäjänimesi] -d [db] -f schema.sql.
 
-Todennäköisesti virtuaaliympäristö ei jää sinulle päälle, joten käynnistä se itse uudestaan "source venv/bin/activate", ennekuin ajat "flask run --reload"
-
-Jos appsetup.py ei onnistu virtuaaliympäristön luomisessa, niin luo se käsin: "python3 -m venv venv", "source venv/bin/activate". Sitten aja komento "pip3 install werkzeug python-dotenv flask psycopg2 sqlalchemy flask_sqlalchemy" virtuaaliympäristössä, jonka jälkeen pääset ajamaan tablesetup.py ja luomaan palvelimen "flask run --reload".
+Suorita: "flask run --reload"
