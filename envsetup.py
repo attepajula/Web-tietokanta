@@ -3,17 +3,18 @@ import secrets
 
 def generate_hash():
     # Generate token
-     return secrets.token_hex(16)
+    return secrets.token_hex(16)
 
 def create_env_file():
     # Check if .env is available
     if not os.path.exists(".env"):
         # Ask database URL
-        database_url = input("LUO UUSI TIETOKANTA avaamalla psql: CREATE DATABASE uusi_tietokanta; \nAnna psql-tietokannan osoite: ")
+        database_url = input("""LUO UUSI TIETOKANTA avaamalla psql: CREATE DATABASE uusi_tietokanta;
+                            \nAnna psql-tietokannan osoite: """)
         secret_key = generate_hash()
 
         # Add env variables to .env
-        with open(".env", "w") as env_file:
+        with open(".env", "w", encoding="utf-8") as env_file:
             env_file.write(f"DATABASE_URL={database_url}\n")
             env_file.write(f"SECRET_KEY={secret_key}\n")
 
