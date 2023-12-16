@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, session, flash, url_for
+from flask import render_template, redirect, request, session, flash, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from dotenv import load_dotenv
 from sqlalchemy.sql import text
@@ -72,7 +72,7 @@ def add_inventory():
         except Exception as e:
             app.logger.error(f"Error executing query: {str(e)}")
             flash("Something went wrong")
-    return redirect("/resources")
+    return redirect("/inventories")
 
 @app.route("/add_project", methods=["POST"])
 def add_project():
@@ -85,6 +85,13 @@ def add_project():
         start_stage = request.form["start_stage"]
         end_stage = request.form["end_stage"]
         inventory_id = request.form["selected_inventory"]
+
+        if not permission_to_use_inv(username, inventory_id):
+            # Input is manipulated:
+            app.logger.warning("Unauthorized access attempt.")
+            flash("Unauthorized access attempt")
+            return redirect("/projects")
+
         
         # query
         sql = """

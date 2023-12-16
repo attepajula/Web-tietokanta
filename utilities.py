@@ -1,10 +1,4 @@
-from flask import Flask, render_template, redirect, request, session, flash, url_for
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import check_password_hash, generate_password_hash
-from os import getenv
-from dotenv import load_dotenv
 from sqlalchemy.sql import text
-from utulities import *
 from app import app, db
 
 def user_has_permission_project(username, project_id):
@@ -41,3 +35,16 @@ def user_has_permission_remove(username, permission_id):
     app.logger.info(permission_id)
     app.logger.info(allowed_permissons)
     return int(permission_id) in allowed_permissons
+
+def permission_to_use_inv(username, inventory_id):
+    sql = "SELECT inventory_id FROM inventories WHERE owner_name = :owner_name;"
+    try:
+        result = db.session.execute(text(sql), {"owner_name": username}).fetchall()
+        allowed_inventories = [int(row[0]) for row in result]
+        app.logger.info("User checked successfully.")
+    except Exception as e:
+        app.logger.error(f"Error executing query: {str(e)}")
+
+    app.logger.info(inventory_id)
+    app.logger.info(allowed_inventories)
+    return int(inventory_id) in allowed_inventories
