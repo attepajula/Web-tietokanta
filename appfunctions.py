@@ -2,7 +2,7 @@ from flask import render_template, redirect, request, session, flash, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from dotenv import load_dotenv
 from sqlalchemy.sql import text
-from utilities import *
+from utilities import user_has_permission_project, user_has_permission_remove, permission_to_use_inv
 from app import app, db
 
 load_dotenv()
@@ -126,7 +126,7 @@ def show_project(username):
         # Input is manipulated:
         app.logger.warning("Unauthorized access attempt.")
         flash("Unauthorized access attempt")
-        return redirect("/projects")
+        return redirect("/projects_route")
 
     sql = "SELECT * FROM projects WHERE project_id = :project_id;"
     try:
@@ -196,10 +196,10 @@ def confirm_operation(data, username):
                     flash("Operation confirmed", "success")
                 except:
                     flash("Operation failed", "error")
-                return redirect(url_for("show_project"))
+                return redirect(url_for("show_project_route"))
             else:
                 flash("No permission", "error")
-                return redirect(url_for("show_project"))
+                return redirect(url_for("show_project_route"))
     else:
         flash("Project completed", "error")
         return redirect(url_for("show_project_route"))
@@ -207,7 +207,7 @@ def confirm_operation(data, username):
 def permissions(data, project_owner_name):
     project_id = data[0]
     app.logger.info(f"Logged in as: {project_owner_name}")
-    sql = """SELECT username, project_name, permission_id
+    sql = """SELECT username, project_name, can_modify
     FROM permissions 
     WHERE project_owner_name = :project_owner_name 
     AND project_id = :project_id;"""
@@ -240,7 +240,7 @@ def grant(data):
                                                       FROM permissions
                                                       WHERE project_id = :project_id
                                                       AND username = :username"""),
-                                                      {"project_id": project_id, 
+                                                      {"project_id": project_id,
                                                        "username": username}).fetchone()
         if existing_permission:
             flash("Permission already exists for this user and project")
@@ -296,7 +296,7 @@ def delete_project(username, data):
         # Input is Unauthorized:
         app.logger.warning("Unauthorized access attempt.")
         flash("Unauthorized")
-        return redirect("/projects")
+        return redirect("/projects_route")
 
     try:
         db.session.execute(text(sql), {"project_id": project_id})
@@ -309,6 +309,3 @@ def delete_project(username, data):
         flash("Something went wrong while deleting project")
 
     return redirect("/projects_route")
-
-if __name__ == "__main__":
-    app.run(debug=True)
