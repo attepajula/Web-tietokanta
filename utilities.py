@@ -39,7 +39,7 @@ def user_has_permission_remove(username, permission_id):
 def permission_to_use_inv(username, inventory_id):
     try:
         query = "SELECT COUNT(*) FROM inventories WHERE owner_name = :owner_name AND inventory_id = :inventory_id"
-        result = db.session.execute(query, {"owner_name": username, "inventory_id": inventory_id}).scalar()
+        result = db.session.execute(text(query), {"owner_name": username, "inventory_id": inventory_id}).scalar()
         app.logger.info("User checked successfully.")
     except Exception as e:
         app.logger.error(f"Error executing query: {str(e)}")
