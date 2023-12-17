@@ -48,3 +48,21 @@ def permission_to_use_inv(username, inventory_id):
     app.logger.info(inventory_id)
     app.logger.info(allowed_inventories)
     return int(inventory_id) in allowed_inventories
+
+def material_exists(material_id):
+    """
+    Tarkista, onko materiaali olemassa tietokannassa.
+
+    Args:
+    - material_id: Materiaalin tunniste.
+
+    Returns:
+    - True, jos materiaali on olemassa; muuten False.
+    """
+    sql = "SELECT COUNT(*) FROM materials WHERE material_id = :material_id;"
+    try:
+        result = db.session.execute(text(sql), {"material_id": material_id}).scalar()
+        return result > 0
+    except Exception as e:
+        app.logger.error(f"Error checking material existence: {str(e)}")
+        return False
