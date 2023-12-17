@@ -2,7 +2,8 @@ from flask import render_template, redirect, request, session
 from dotenv import load_dotenv
 
 from app import app
-from appfunctions import *
+from appfunctions import login, add_new_user, add_inventory, add_project, show_project, projects, confirm_operation, permissions, grant, remove_permission, delete_project
+from materialfunctions import resources, show_project_material_needs, insert_material_need_view
 
 load_dotenv()
 
@@ -42,6 +43,11 @@ def show_project_route():
     username = session.get("username")
     return show_project(username)
 
+@app.route("/show_project_material_needs_route", methods=["GET", "POST"])
+def show_project_material_needs_route():
+    username = session.get("username")
+    return show_project_material_needs(username)
+
 @app.route("/projects_route", methods=["GET"])
 def projects_route(data=None):
     username = session.get("username")
@@ -53,9 +59,11 @@ def confirm():
     username = session.get("username")
     return confirm_operation(data, username)
 
-@app.route("/resources")
-def resources():
-    return render_template("resources.html")
+@app.route("/resources_route", methods=["GET"])
+def resources_route():
+    data = session.get("selected_data")
+    username = session.get("username")
+    return resources(username0=username, data=data)
 
 @app.route("/inventories")
 def inventories():
@@ -77,7 +85,7 @@ def remove_permission_route():
     username = session.get("username")
     permission_id = request.form["selected_permission"]
     return remove_permission(username, permission_id)
-    
+
 @app.route("/delete_route", methods=["POST"])
 def delete_route():
     username = session.get("username")
