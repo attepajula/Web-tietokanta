@@ -112,3 +112,12 @@ def can_modify_helper(username, project_id):
     app.logger.info(f"User: {username}, Project ID: {project_id}, Allowed Projects: {allowed_projects}")
     
     return int(project_id) in allowed_projects
+
+def get_materials():
+    try:
+        query = "SELECT * FROM materials;"
+        result = db.session.execute(text(query)).fetchall()
+        app.logger.info(result)
+    except Exception as e:
+        app.logger.error(f"Error executing query: {str(e)}")
+    return result
