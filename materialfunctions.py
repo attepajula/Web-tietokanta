@@ -2,7 +2,7 @@ from flask import render_template, redirect, request, session, flash, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from dotenv import load_dotenv
 from sqlalchemy.sql import text
-from utilities import user_has_permission_project, user_has_permission_remove, permission_to_use_inv, material_exists
+from utilities import user_has_permission_project, user_has_permission_remove, permission_to_use_inv, material_exists, validate_stage
 from app import app, db
 
 def resources(username0, needs=None):
@@ -69,29 +69,27 @@ def insert_material_need_view(username):
         flash("No such material")
         return show_project_material_needs(username)
 
+    
     if not user_has_permission_project(username, project_id):
         # Input is manipulated:
         app.logger.warning("Unauthorized access attempt.")
         flash("Unauthorized access attempt")
         return redirect("/resources_route")
     
-    query = "SELECT can_modify FROM permissions WHERE username = :username;"
-    can_modify = db.session.execute(text(query), {"username":username}).fetchone()
-    app.logger.info(can_modify[0])
-    if can_modify[0] == True:
-        sql = """INSERT INTO project_material_needs (project_id, stage_id, material_id, quantity_needed)
-        VALUES (:project_id, :stage_id, :material_id, :quantity_needed);"""
+    stage_id = validate_stage(project_id, stage_id)
+        
+    sql = """INSERT INTO project_material_needs (project_id, stage_id, material_id, quantity_needed)
+    VALUES (:project_id, :stage_id, :material_id, :quantity_needed);"""
 
-        try:
-            db.session.execute(text(sql), {"project_id": project_id, "stage_id": stage_id,
-                                            "material_id": material_id,
-                                            "quantity_needed": quantity_needed})
-            db.session.commit()
-            app.logger.info("Material need inserted successfully.")
-            flash("Material need inserted successfully.")
-        except Exception as e:
-            app.logger.error(f"Error inserting material need: {str(e)}")
-    else:
-        flash("No permission", "error")
+    try:
+        db.session.execute(text(sql), {"project_id": project_id, "stage_id": stage_id,
+                                        "material_id": material_id,
+                                        "quantity_needed": quantity_needed})
+        db.session.commit()
+        app.logger.info("Material need inserted successfully.")
+        flash("Material need inserted successfully.")
+    except Exception as e:
+        app.logger.error(f"Error inserting material need: {str(e)}")
+
 
     return show_project_material_needs(username)

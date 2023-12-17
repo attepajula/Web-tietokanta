@@ -62,3 +62,28 @@ def material_exists(material_id):
     except Exception as e:
         app.logger.error(f"Error checking material existence: {str(e)}")
         return False
+
+def validate_stage(project_id, stage_id):
+    """
+    Check if the provided stage_id is within the valid range for the given project.
+
+    Args:
+    - project_id: Identifier of the project.
+    - stage_id: Stage identifier to validate.
+
+    Returns:
+    - True if the stage_id is within the valid range; otherwise, False.
+    """
+    try:
+        sql = "SELECT end_stage FROM projects WHERE project_id = :project_id;"
+        result = db.session.execute(text(sql), {"project_id": project_id}).fetchone()
+        
+        # Tarkista, onko stage_id suurempi kuin end_stage
+        if result and result[0] and int(stage_id) > result[0]:
+            return result[0]  # Jos stage_id on suurempi, palauta end_stage
+        else:
+            return int(stage_id)  # Muuten palauta alkuperäinen stage_id
+    except Exception as e:
+        # Käsittele poikkeukset tarvittaessa
+        print(f"Error getting end stage: {e}")
+        return stage_id
