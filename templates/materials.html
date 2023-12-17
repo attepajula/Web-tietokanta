@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materials</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 40px;
+            text-align: left;
+        }
+    
+        form {
+            font-family: 'Courier New', monospace;
+            text-align: left;
+            width: 20%;
+            float: left;
+        }
+    
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    
+        input, textarea, select {
+            width: calc(100% - 16px);
+            padding: 6px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+    
+        input[type="submit"] {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 12px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
+        input[readonly] {
+            background-color: #fff;
+        }
+    
+        a.submit-link {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 12px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
+        button {
+            font-family: 'Courier New', monospace;
+            margin: 40px;
+            text-align: right;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        table {
+            width: 50%;
+            margin-right: 40px;
+            margin-left: auto;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        progress {
+            width: 100%;
+        }   
+
+        div {
+            width: 50%;
+            margin-top: 10px;
+            margin-right: 40px;
+            margin-left: auto;
+        }
+    
+        .dark-mode {
+            background-color: #000;
+            color: #fff;
+        }
+    
+        .toggle-btn {
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #000;
+            padding: 10px;
+            cursor: pointer;
+            outline: none;
+        }
+    </style>
+    
+</head>
+<body>
+{% if session.username %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <p>Logged in as {{ session.username }}</p>
+    <a href="/logout" class="submit-link">Log out</a>
+    <a href="/resources_route" class="submit-link">Material Needs</a>
+    <a href="/" class="submit-link">Frontpage</a>
+    
+    <h1>New material</h1>
+    <form method="POST" action="/add_material_route">
+
+        <label for="material_name">Material Name:</label>
+        <input type="text" name="material_name" required>
+        <br>
+        <label for="desc">Description:</label>
+        <input type="text" name="desc" required>
+        <br>
+        <label for="unit">Unit:</label>
+        <input type="text" name="unit" required>
+        <br>
+        <input type="submit" value="Insert New Material">
+    </form>
+
+    <table border="1">
+        <caption>Materials</mark></caption> 
+        <tr>
+            <th>Material id</th>
+            <th>Material Name</th>
+            <th>Description</th>
+            <th>Unit</th>
+        </tr>
+        {% for item in materials %}
+            <tr>
+                <td>{{ item.material_id }}</td>
+                <td>{{ item.material_name }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.unit }}</td>
+
+            </tr>
+        {% endfor %}
+    </table>
+
+{% else %}
+    <a href="/" class="submit-link">Log in</a>
+{% endif %}
+<button class="toggle-btn" onclick="toggleDarkMode()">☀️/🌑</button>
+    <script>
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeEnabled = body.classList.toggle('dark-mode');
+
+            // Set preference
+            setDarkModePreference(darkModeEnabled);
+            }
+
+            function getDarkModePreference() {
+                const darkModeCookie = document.cookie.replace(/(?:(?:^|.*;\s*)darkModeEnabled\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                return darkModeCookie === 'true';
+            }
+
+            function setDarkModePreference(enabled) {
+                document.cookie = `darkModeEnabled=${enabled}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/`;
+            }
+
+            // Set darkmode on if prefered
+            document.addEventListener("DOMContentLoaded", function () {
+                const darkModeEnabled = getDarkModePreference();
+                if (darkModeEnabled) {
+                    document.body.classList.add('dark-mode');
+                }
+            });
+
+    </script>
+</body>
+</html>
