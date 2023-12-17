@@ -2,7 +2,7 @@ from flask import render_template, redirect, request, session, flash, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from dotenv import load_dotenv
 from sqlalchemy.sql import text
-from utilities import user_has_permission_project, user_has_permission_remove, permission_to_use_inv, material_exists, validate_stage
+from utilities import user_has_permission_project, user_has_permission_remove, permission_to_use_inv, material_exists, validate_stage, can_modify_helper
 from app import app, db
 
 def resources(username0, needs=None):
@@ -65,31 +65,73 @@ def insert_material_need_view(username):
         material_id = request.form["material_id"]
         quantity_needed = request.form["quantity_needed"]
     
-    if not material_exists(material_id):
-        flash("No such material")
+        if not material_exists(material_id):
+            flash("No such material")
+            return show_project_material_needs(username)
+
+        if not can_modify_helper(username, int(project_id)):
+            flash("No permission")
+            return show_project_material_needs(username)
+
+        if not user_has_permission_project(username, project_id):
+            # Input is manipulated:
+            app.logger.warning("Unauthorized access attempt.")
+            flash("Unauthorized access attempt")
+            return redirect("/resources_route")
+        
+        stage_id = validate_stage(project_id, stage_id)
+            
+        sql = """INSERT INTO project_material_needs (project_id, stage_id, material_id, quantity_needed)
+        VALUES (:project_id, :stage_id, :material_id, :quantity_needed);"""
+
+        try:
+            db.session.execute(text(sql), {"project_id": project_id, "stage_id": stage_id,
+                                            "material_id": material_id,
+                                            "quantity_needed": quantity_needed})
+            db.session.commit()
+            app.logger.info("Material need inserted successfully.")
+            flash("Material need inserted successfully.")
+        except Exception as e:
+            app.logger.error(f"Error inserting material need: {str(e)}")
+
+
         return show_project_material_needs(username)
 
-    
-    if not user_has_permission_project(username, project_id):
-        # Input is manipulated:
-        app.logger.warning("Unauthorized access attempt.")
-        flash("Unauthorized access attempt")
-        return redirect("/resources_route")
-    
-    stage_id = validate_stage(project_id, stage_id)
-        
-    sql = """INSERT INTO project_material_needs (project_id, stage_id, material_id, quantity_needed)
-    VALUES (:project_id, :stage_id, :material_id, :quantity_needed);"""
+def remove_material_need(username):
+    if request.method == "POST":
+        project_material_needs_id = request.form["material_need_id"]
+        try:
+            check_sql = """SELECT project_id FROM project_material_needs
+            WHERE project_material_needs_id = :project_material_needs_id;"""
+            result = db.session.execute(text(check_sql), {"project_material_needs_id": project_material_needs_id}).fetchone()
 
-    try:
-        db.session.execute(text(sql), {"project_id": project_id, "stage_id": stage_id,
-                                        "material_id": material_id,
-                                        "quantity_needed": quantity_needed})
-        db.session.commit()
-        app.logger.info("Material need inserted successfully.")
-        flash("Material need inserted successfully.")
-    except Exception as e:
-        app.logger.error(f"Error inserting material need: {str(e)}")
+            if not result:
+                flash("Material need not found.", "error")
+                return redirect("/resources_route")
+            
+            if not user_has_permission_project(username, session["selected_project"]):
+                # Input is manipulated:
+                app.logger.warning("Unauthorized access attempt.")
+                flash("Unauthorized access attempt")
+                return redirect("/resources_route")
+            
+            sql2 = """SELECT project_id FROM project_material_needs 
+            WHERE project_material_needs_id = :project_material_needs_id;"""
+            project_id = db.session.execute(text(sql2), {"project_material_needs_id": project_material_needs_id}).fetchall()
+            app.logger.info(f"PROJECT ID: {project_id[0][0]}")
 
+            if not can_modify_helper(username, project_id[0][0]):
+                flash("No permission")
+                return show_project_material_needs(username)
+            
 
-    return show_project_material_needs(username)
+            delete_sql = "DELETE FROM project_material_needs WHERE project_material_needs_id = :project_material_needs_id;"
+            db.session.execute(text(delete_sql), {"project_material_needs_id": project_material_needs_id})
+            db.session.commit()
+
+            flash("Material need removed successfully.")
+            app.logger.info("Material need removed successfully.")
+        except Exception as e:
+            app.logger.info(f"Error removing material need: {str(e)}", "error")
+
+        return resources(username0=username)

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 from app import app
 from appfunctions import login, add_new_user, add_inventory, add_project, show_project, projects, confirm_operation, permissions, grant, remove_permission, delete_project
-from materialfunctions import resources, show_project_material_needs, insert_material_need_view
+from materialfunctions import resources, show_project_material_needs, insert_material_need_view, remove_material_need
 
 load_dotenv()
 
@@ -95,6 +95,11 @@ def delete_route():
     username = session.get("username")
     data = session.get("selected_data")
     return delete_project(username, data)
+
+@app.route("/remove_material_need_route", methods=["POST"])
+def remove_material_need_route():
+    username = session.get("username")
+    return remove_material_need(username)
 
 if __name__ == "__main__":
     app.run(debug=True)
