@@ -139,3 +139,63 @@ def remove_material_need(username):
             app.logger.info(f"Error removing material need: {str(e)}", "error")
 
         return resources(username0=username)
+
+def add_material_view():
+    if request.method == "POST":
+        material_name = request.form["material_name"]
+        description = request.form["desc"]
+        unit = request.form["unit"]
+        if material_exists(material_name):
+            flash("Material already exists", "error")
+            return redirect("/add_material_route")
+
+        sql = """INSERT INTO materials (material_name, description, unit) 
+        VALUES (:material_name, :description, :unit);"""
+        try:
+            db.session.execute(text(sql), {"material_name": material_name, "description": description, "unit": unit})
+            db.session.commit()
+            flash("Material added successfully.")
+        except Exception as e:
+            app.logger.error(f"Error adding material: {str(e)}")
+            flash("Error adding material", "error")
+
+    return render_template("materials.html")
+
+def material_exists(material_name):
+    sql = "SELECT material_id FROM materials WHERE material_name = :material_name;"
+    result = db.session.execute(text(sql), {"material_name": material_name}).fetchone()
+    return result is not None
+
+def add_material_to_inventory():
+    if request.method == 'POST':
+        material_id = request.form['material_id']
+        quantity = request.form['quantity']
+        inventory_id = request.form['inventory_id']
+
+        try:
+            material_check_sql = "SELECT material_id FROM materials WHERE material_id = :material_id;"
+            material_exists = db.execute(text(material_check_sql), {"material_id": material_id}).fetchone()
+
+            if not material_exists:
+                flash("Material does not exist", "error")
+                return redirect("/add_material_to_inventory")
+
+            inventory_check_sql = "SELECT inventory_id FROM inventories WHERE inventory_id = :inventory_id;"
+            inventory_exists = db.execute(text(inventory_check_sql), {"inventory_id": inventory_id}).fetchone()
+
+            if not inventory_exists:
+                flash("Inventory does not exist", "error")
+                return redirect("/add_material_to_inventory")
+
+            add_material_sql = """
+                INSERT INTO material_inventory (material_id, quantity, inventory_id)
+                VALUES (:material_id, :quantity, :inventory_id);
+            """
+            db.execute(text(add_material_sql), {"material_id": material_id, "quantity": quantity, "inventory_id": inventory_id})
+            
+            flash("Material added to inventory successfully.")
+        except Exception as e:
+            app.logger.error(f"Error adding material to inventory: {str(e)}")
+            flash("Error adding material to inventory", "error")
+
+    return render_template("add_material_to_inventory.html")
