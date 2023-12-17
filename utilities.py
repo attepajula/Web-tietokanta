@@ -37,27 +37,23 @@ def user_has_permission_remove(username, permission_id):
     return int(permission_id) in allowed_permissons
 
 def permission_to_use_inv(username, inventory_id):
-    sql = "SELECT inventory_id FROM inventories WHERE owner_name = :owner_name;"
     try:
-        result = db.session.execute(text(sql), {"owner_name": username}).fetchall()
-        allowed_inventories = [int(row[0]) for row in result]
+        query = "SELECT COUNT(*) FROM inventories WHERE owner_name = :owner_name AND inventory_id = :inventory_id"
+        result = db.session.execute(query, {"owner_name": username, "inventory_id": inventory_id}).scalar()
         app.logger.info("User checked successfully.")
     except Exception as e:
         app.logger.error(f"Error executing query: {str(e)}")
-
-    app.logger.info(inventory_id)
-    app.logger.info(allowed_inventories)
-    return int(inventory_id) in allowed_inventories
+    return result > 0
 
 def material_exists(material_id):
     """
-    Tarkista, onko materiaali olemassa tietokannassa.
+    Check if the material exists in the database.
 
     Args:
-    - material_id: Materiaalin tunniste.
+    - material_id: Identifier of the material.
 
     Returns:
-    - True, jos materiaali on olemassa; muuten False.
+    - True if the material exists; otherwise, False.
     """
     sql = "SELECT COUNT(*) FROM materials WHERE material_id = :material_id;"
     try:
