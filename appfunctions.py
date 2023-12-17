@@ -207,7 +207,7 @@ def confirm_operation(data, username):
 def permissions(data, project_owner_name):
     project_id = data[0]
     app.logger.info(f"Logged in as: {project_owner_name}")
-    sql = """SELECT username, project_name, can_modify
+    sql = """SELECT permission_id, username, project_name, can_modify
     FROM permissions 
     WHERE project_owner_name = :project_owner_name 
     AND project_id = :project_id;"""
