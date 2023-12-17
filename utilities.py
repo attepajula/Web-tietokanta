@@ -87,3 +87,28 @@ def validate_stage(project_id, stage_id):
         # Käsittele poikkeukset tarvittaessa
         print(f"Error getting end stage: {e}")
         return stage_id
+    
+def can_modify_helper(username, project_id):
+    allowed_projects = []
+
+    # Projects owned by the user
+    sql_owned = "SELECT project_id FROM projects WHERE owner_name = :owner_name;"
+    try:
+        result_owned = db.session.execute(text(sql_owned), {"owner_name": username}).fetchall()
+        allowed_projects.extend([int(row[0]) for row in result_owned])
+        app.logger.info("User checked successfully for owned projects.")
+    except Exception as e:
+        app.logger.error(f"Error executing query for owned projects: {str(e)}")
+
+    # Projects where the user has modify permission
+    sql_permissions = "SELECT project_id FROM permissions WHERE username = :username AND can_modify = true;"
+    try:
+        result_permissions = db.session.execute(text(sql_permissions), {"username": username}).fetchall()
+        allowed_projects.extend([int(row[0]) for row in result_permissions])
+        app.logger.info("User checked successfully for projects with modify permissions.")
+    except Exception as e:
+        app.logger.error(f"Error executing query for projects with modify permissions: {str(e)}")
+
+    app.logger.info(f"User: {username}, Project ID: {project_id}, Allowed Projects: {allowed_projects}")
+    
+    return int(project_id) in allowed_projects
