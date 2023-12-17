@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects</title>
+    <title>Resources</title>
     <style>
         body {
             font-family: 'Courier New', monospace;
@@ -54,6 +54,22 @@
             text-align: center;
             text-decoration: none;
             background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        b.submit-link {
+            display: inline-block;
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            padding: 10px 20px;
+            font-size: 12px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #ff0026;
             color: white;
             border: none;
             border-radius: 5px;
@@ -121,22 +137,28 @@
 
     <p>Logged in as {{ session.username }}</p>
     <a href="/logout" class="submit-link">Log out</a>
-    <a href="/" class="submit-link">To frontpage</a>
+    <a href="/projects_route" class="submit-link">Projects</a>
 
-    <h1>Add an inventory</h1>
-    <form method="POST" action="/add_inventory">
-        <label for="inventory_name">Inventory Name:</label>
-        <input type="text" id="inventory_name" name="inventory_name" required=""><br>
-
-        <label for="owner_name">Owner Name:</label>
-        <input type="text" id="owner_name" name="owner_name" value="{{session.username}}" readonly=""><br>
-
-        <label for="notes">Notes:</label>
-        <textarea id="notes" name="notes"></textarea><br>
-
-        <br>
-        <input type="submit" value="Add inventory">
+    <h1>Add or show a project</h1>
+    <form method="POST" action="/insert_material_need_view">
+        <input type="submit" value="Insert material need">
     </form>
+
+    <form method="POST" action="/show_project_material_needs_route">
+        <label for="project_select">Choose a project:</label>
+        <select id="project_select" name="selected_project" required>
+            {% for project in projects %}
+                <option value="{{ project.project_id }}">{{ project.project_name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <input type="submit" value="Show material needs">
+    </form>
+
+    {% if data %}
+        {{ data }}
+    {% endif %}
+
 
 {% else %}
     <a href="/" class="submit-link">Log in</a>
