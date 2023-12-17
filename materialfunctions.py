@@ -103,7 +103,8 @@ def remove_material_need(username):
         try:
             check_sql = """SELECT project_id FROM project_material_needs
             WHERE project_material_needs_id = :project_material_needs_id;"""
-            result = db.session.execute(text(check_sql), {"project_material_needs_id": project_material_needs_id}).fetchone()
+            result = db.session.execute(text(check_sql), 
+                                        {"project_material_needs_id": project_material_needs_id}).fetchone()
 
             if not result:
                 flash("Material need not found.", "error")
@@ -117,7 +118,8 @@ def remove_material_need(username):
             
             sql2 = """SELECT project_id FROM project_material_needs 
             WHERE project_material_needs_id = :project_material_needs_id;"""
-            project_id = db.session.execute(text(sql2), {"project_material_needs_id": project_material_needs_id}).fetchall()
+            project_id = db.session.execute(text(sql2), 
+                                            {"project_material_needs_id": project_material_needs_id}).fetchall()
             app.logger.info(f"PROJECT ID: {project_id[0][0]}")
 
             if not can_modify_helper(username, project_id[0][0]):
@@ -125,8 +127,10 @@ def remove_material_need(username):
                 return show_project_material_needs(username)
             
 
-            delete_sql = "DELETE FROM project_material_needs WHERE project_material_needs_id = :project_material_needs_id;"
-            db.session.execute(text(delete_sql), {"project_material_needs_id": project_material_needs_id})
+            delete_sql = """DELETE FROM project_material_needs 
+            WHERE project_material_needs_id = :project_material_needs_id;"""
+            db.session.execute(text(delete_sql), 
+                               {"project_material_needs_id": project_material_needs_id})
             db.session.commit()
 
             flash("Material need removed successfully.")
