@@ -61,9 +61,8 @@ def confirm():
 
 @app.route("/resources_route", methods=["GET"])
 def resources_route():
-    data = session.get("selected_data")
     username = session.get("username")
-    return resources(username0=username, data=data)
+    return resources(username0=username)
 
 @app.route("/inventories")
 def inventories():
@@ -79,6 +78,11 @@ def permissions_route():
 def grant_route():
     data = session.get("selected_data")
     return grant(data)
+
+@app.route("/insert_material_need", methods=["POST"])
+def insert_material_need():
+    username = session.get("username")
+    return insert_material_need_view(username)
 
 @app.route("/remove_permission_route", methods=["POST"])
 def remove_permission_route():
