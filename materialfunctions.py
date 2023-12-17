@@ -145,9 +145,6 @@ def add_material_view():
         material_name = request.form["material_name"]
         description = request.form["desc"]
         unit = request.form["unit"]
-        if material_exists(material_name):
-            flash("Material already exists", "error")
-            return redirect("/add_material_route")
 
         sql = """INSERT INTO materials (material_name, description, unit) 
         VALUES (:material_name, :description, :unit);"""
@@ -161,9 +158,9 @@ def add_material_view():
 
     return render_template("materials.html")
 
-def material_exists(material_name):
-    sql = "SELECT material_id FROM materials WHERE material_name = :material_name;"
-    result = db.session.execute(text(sql), {"material_name": material_name}).fetchone()
+def material_exists(material_id):
+    sql = "SELECT material_id FROM materials WHERE material_id = :material_id;"
+    result = db.session.execute(text(sql), {"material_id": material_id}).fetchone()
     return result is not None
 
 def add_material_to_inventory(username):
