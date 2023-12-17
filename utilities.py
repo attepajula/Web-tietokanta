@@ -121,3 +121,12 @@ def get_materials():
     except Exception as e:
         app.logger.error(f"Error executing query: {str(e)}")
     return result
+
+def get_inventories(username):
+    sql = """SELECT inventory_id, inventory_name FROM inventories
+    WHERE owner_name = :owner_name"""
+    inventories = db.session.execute(text(sql), 
+                                        {"owner_name": username}).fetchall()
+    
+    app.logger.info(inventories)
+    return inventories

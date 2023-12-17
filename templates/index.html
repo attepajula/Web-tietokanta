@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>MRP</title>
     <style>
         a.submit-link {
             display: inline-block;
@@ -95,11 +95,13 @@
     {% if session.username %}
         <p>Logged in as {{ session.username }}</p>
         <a href="/logout" class="submit-link">Log out</a>
-        <a href="/projects" class="submit-link">Projects</a>
+        <a href="/projects_route" class="submit-link">Projects</a>
         <a href="/inventories" class="submit-link">Inventories</a>
+        <a href="/materials_route" class="submit-link">Materials</a>
+        <a href="/resources_route" class="submit-link">Material Needs</a>
     {% else %}
         </p><a href="/signup" class="submit-link">Register</a>
-        <form action="/login" method="POST">
+        <form action="/login_route" method="POST">
             <p>Username:<br>
             <input type="text" name="username"></p>
             <p>Password:<br>

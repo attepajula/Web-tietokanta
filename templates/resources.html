@@ -85,8 +85,14 @@
             right: 0;
         }
 
+        mark {
+            background-color: transparent;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
         table {
-            width: 50%;
+            width: 30%;
             margin-right: 40px;
             margin-left: auto;
         }
@@ -101,10 +107,9 @@
         }   
 
         div {
-            width: 50%;
+            width: 100%;
             margin-top: 10px;
             margin-right: 40px;
-            margin-left: auto;
         }
     
         .dark-mode {
@@ -138,27 +143,81 @@
     <p>Logged in as {{ session.username }}</p>
     <a href="/logout" class="submit-link">Log out</a>
     <a href="/projects_route" class="submit-link">Projects</a>
+    <a href="/" class="submit-link">Frontpage</a>
 
-    <h1>Add or show a project</h1>
-    <form method="POST" action="/insert_material_need_view">
-        <input type="submit" value="Insert material need">
-    </form>
+    <h1>Material Needs</h1>
+    <div>
+        <form method="POST" action="/insert_material_need">
+            <label for="material_id">Material ID:</label>
+            <input type="number" name="material_id" required>
+            <br>
 
-    <form method="POST" action="/show_project_material_needs_route">
-        <label for="project_select">Choose a project:</label>
-        <select id="project_select" name="selected_project" required>
-            {% for project in projects %}
-                <option value="{{ project.project_id }}">{{ project.project_name }}</option>
+            <label for="quantity_needed">Quantity Needed:</label>
+            <input type="number" name="quantity_needed" required>
+            <br>
+
+            <label for="stage_needed">Stage Needed:</label>
+            <input type="number" name="stage_needed" required>
+            <br>
+
+            <label for="project_select">Choose a project:</label>
+            <select id="project_select" name="selected_project" required>
+                {% for project in projects %}
+                    <option value="{{ project.project_id }}">{{ project.project_name }}</option>
+                {% endfor %}
+            </select>
+            <br>
+
+            <input type="submit" value="Insert Material Need">
+        </form>
+        {% if needs %}
+            <form method="POST" action="/remove_material_need_route">
+                <label for="material_need_id">Select Material Need:</label>
+                <select id="material_need_id" name="material_need_id" required>
+                    {% for item in needs %}
+                        <option value="{{ item.project_material_needs_id }}">{{ item.material_name }} - Stage: {{ item.stage_id }} - Quantity: {{ item.quantity_needed }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+            
+                <input type="submit" value="Remove Material Need">
+            </form>
+        {% endif %}
+        <form method="POST" action="/show_project_material_needs_route">
+            <label for="project_select">Choose a project:</label>
+            <select id="project_select" name="selected_project" required>
+                {% for project in projects %}
+                    <option value="{{ project.project_id }}">{{ project.project_name }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <input type="submit" value="Show material needs">
+        </form>
+    </div>
+
+    {% if needs %}
+        <table border="1">
+            <caption>Project Material Needs for <mark>{{ needs[0].project_name }}</mark></caption> 
+            <tr>
+                <th>Material</th>
+                <th>Quantity Needed</th>
+                <th>Stage Needed</th>
+            </tr>
+            {% for item in needs %}
+                <tr>
+                    <td>{{ item.material_name }}</td>
+                    <td>{{ item.quantity_needed }}</td>
+                    <td>
+                        {% if item.stage_id <= item.start_stage %}
+                            {{ item.stage_id }} ✓
+                        {% else %}
+                            {{ item.stage_id }}
+                        {% endif %}
+                    </td>
+                </tr>
             {% endfor %}
-        </select>
-        <br>
-        <input type="submit" value="Show material needs">
-    </form>
-
-    {% if data %}
-        {{ data }}
+        </table>
     {% endif %}
-
 
 {% else %}
     <a href="/" class="submit-link">Log in</a>

@@ -83,8 +83,7 @@ def add_project(username):
             # Input is manipulated:
             app.logger.warning("Unauthorized access attempt.")
             flash("Unauthorized access attempt")
-            return redirect("/projects")
-
+            return redirect("/projects_route")
 
         # query
         sql = """

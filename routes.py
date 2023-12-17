@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 
 from app import app
 from appfunctions import login, add_new_user, add_inventory, add_project, show_project, projects, confirm_operation, permissions, grant, remove_permission, delete_project
-from materialfunctions import resources, show_project_material_needs, insert_material_need_view, remove_material_need, add_material_view
-from utilities import get_materials
+from materialfunctions import resources, show_project_material_needs, insert_material_need_view, remove_material_need, add_material_view, add_material_to_inventory, get_materials_by_inventory
+from utilities import get_materials, get_inventories
 
 load_dotenv()
 
@@ -66,8 +66,10 @@ def resources_route():
     return resources(username0=username)
 
 @app.route("/inventories")
-def inventories():
-    return render_template("inventories.html")
+def show_inventories(materials_list=None):
+    username = session.get("username")
+    inventories = get_inventories(username)
+    return render_template("inventories.html", inventories=inventories, materials_list=None)
 
 @app.route("/permissions_route")
 def permissions_route():
@@ -113,6 +115,17 @@ def add_material_route():
     materials = get_materials()
     return render_template("materials.html", materials=materials)
 
+@app.route("/add_material_to_inventory_route", methods=['GET', 'POST'])
+def add_material_to_inventory_route():
+    username = session.get("username")
+    return add_material_to_inventory(username)
+
+@app.route("/get_materials_by_inventory_route", methods=['GET', 'POST'])
+def get_materials_by_inventory_route():
+    username = session.get("username")
+    materials_list = get_materials_by_inventory(username)
+    app.logger.info(f"Materials list: {materials_list}")
+    return show_inventories(materials_list=materials_list)
 
 if __name__ == "__main__":
     app.run(debug=True)

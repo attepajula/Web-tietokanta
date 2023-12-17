@@ -166,36 +166,59 @@ def material_exists(material_name):
     result = db.session.execute(text(sql), {"material_name": material_name}).fetchone()
     return result is not None
 
-def add_material_to_inventory():
+def add_material_to_inventory(username):
     if request.method == 'POST':
         material_id = request.form['material_id']
         quantity = request.form['quantity']
         inventory_id = request.form['inventory_id']
 
+        if not permission_to_use_inv(username, inventory_id):
+            flash("No permission")
+            return add_material_view()
+        
         try:
             material_check_sql = "SELECT material_id FROM materials WHERE material_id = :material_id;"
-            material_exists = db.execute(text(material_check_sql), {"material_id": material_id}).fetchone()
+            material_exists = db.session.execute(text(material_check_sql), {"material_id": material_id}).fetchone()
 
             if not material_exists:
                 flash("Material does not exist", "error")
-                return redirect("/add_material_to_inventory")
+                return redirect("/add_material_to_inventory_route")
 
             inventory_check_sql = "SELECT inventory_id FROM inventories WHERE inventory_id = :inventory_id;"
-            inventory_exists = db.execute(text(inventory_check_sql), {"inventory_id": inventory_id}).fetchone()
+            inventory_exists = db.session.execute(text(inventory_check_sql), {"inventory_id": inventory_id}).fetchone()
 
             if not inventory_exists:
                 flash("Inventory does not exist", "error")
-                return redirect("/add_material_to_inventory")
+                return redirect("/add_material_to_inventory_route")
 
             add_material_sql = """
                 INSERT INTO material_inventory (material_id, quantity, inventory_id)
                 VALUES (:material_id, :quantity, :inventory_id);
             """
-            db.execute(text(add_material_sql), {"material_id": material_id, "quantity": quantity, "inventory_id": inventory_id})
-            
+            db.session.execute(text(add_material_sql), {"material_id": material_id,
+                                                         "quantity": quantity, "inventory_id": inventory_id})
+            db.session.commit()
+
             flash("Material added to inventory successfully.")
         except Exception as e:
             app.logger.error(f"Error adding material to inventory: {str(e)}")
             flash("Error adding material to inventory", "error")
 
-    return render_template("add_material_to_inventory.html")
+    return redirect("/inventories")
+
+def get_materials_by_inventory(username):
+    if request.method == 'POST':
+        inventory_id = request.form['inventory_id']
+    if not permission_to_use_inv(username, inventory_id):
+        flash("No permission")
+        return add_material_view()
+    try:
+        sql = """
+            SELECT * FROM material_inventory
+            WHERE inventory_id = :inventory_id;
+        """
+        materials = db.session.execute(text(sql), {"inventory_id": inventory_id}).fetchall()
+        return materials
+    except Exception as e:
+        app.logger.error(f"Error retrieving materials by inventory: {str(e)}")
+        return []

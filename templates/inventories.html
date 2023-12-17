@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects</title>
+    <title>Inventories</title>
     <style>
         body {
             font-family: 'Courier New', monospace;
@@ -83,12 +83,10 @@
         progress {
             width: 100%;
         }   
-
         div {
-            width: 50%;
-            margin-top: 10px;
-            margin-right: 40px;
+            width: 100%;
             margin-left: auto;
+            margin-right: auto;
         }
     
         .dark-mode {
@@ -123,8 +121,8 @@
     <a href="/logout" class="submit-link">Log out</a>
     <a href="/" class="submit-link">To frontpage</a>
 
-    <h1>Add an inventory</h1>
-    <form method="POST" action="/add_inventory">
+    <h1>Inventories</h1>
+    <form method="POST" action="/add_inventory_route">
         <label for="inventory_name">Inventory Name:</label>
         <input type="text" id="inventory_name" name="inventory_name" required=""><br>
 
@@ -137,6 +135,64 @@
         <br>
         <input type="submit" value="Add inventory">
     </form>
+    <div>
+        <form method="POST" action="/add_material_to_inventory_route">
+            <label for="material_id">Material ID:</label>
+            <input type="text" name="material_id" required>
+            <br>
+
+            <label for="quantity">Quantity:</label>
+            <input type="text" name="quantity" required>
+            <br>
+
+            <label for="inventory_id">Inventory Name:</label>
+            <select name="inventory_id" required>
+                {% if inventories %}
+                    {% for inventory in inventories %}
+                        <option value="{{ inventory.inventory_id }}">{{ inventory.inventory_name }}</option>
+                    {% endfor %}
+                {% else %}
+                    <option value="" disabled selected>No inventories available</option>
+                {% endif %}
+            </select>
+            <br>
+
+            <input type="submit" value="Add to Inventory">
+        </form>
+        <form method="POST" action="/get_materials_by_inventory_route">
+            <label for="inventory_id">Inventory Name:</label>
+            <select name="inventory_id" required>
+                {% if inventories %}
+                    {% for inventory in inventories %}
+                        <option value="{{ inventory.inventory_id }}">{{ inventory.inventory_name }}</option>
+                    {% endfor %}
+                {% else %}
+                    <option value="" disabled selected>No inventories available</option>
+                {% endif %}
+            </select>
+            <br>
+
+            <input type="submit" value="Show">
+        </form>
+    </div>
+    
+    {% if materials_list %}
+        {% materials_list %}
+        <table border="1">
+            <tr>
+                <th>Material ID</th>
+                <th>Quantity</th>
+            </tr>
+            {% for material in materials_list %}
+                <tr>
+                    <td>{{ material.material_id }}</td>
+                    <td>{{ material.quantity }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No materials found for the specified inventory.</p>
+    {% endif %}
 
 {% else %}
     <a href="/" class="submit-link">Log in</a>
