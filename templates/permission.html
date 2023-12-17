@@ -143,12 +143,15 @@
         <label for="permission_select">Choose permissions:</label>
         <select id="permission_select" name="selected_permission" required>
             {% for permission in permissions %}
-                <option value="{{ permission.permission_id }}">{{ permission.project_name, permission.username, permission.can_modify }}</option>
+                <option value="{{ permission.permission_id }}">
+                    {{ permission.project_name }} - {{ permission.username }} - {{ permission.can_modify }}
+                </option>
             {% endfor %}
         </select>
         <br>
         <input type="submit" value="Remove">
     </form>
+    
 
 {% else %}
     <a href="/" class="submit-link">Log in</a>
