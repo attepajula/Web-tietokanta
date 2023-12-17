@@ -59,6 +59,22 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        b.submit-link {
+            display: inline-block;
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            padding: 10px 20px;
+            font-size: 12px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #ff0026;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     
         button {
             font-family: 'Courier New', monospace;
@@ -124,7 +140,7 @@
     <a href="/" class="submit-link">To frontpage</a>
 
     <h1>Add or show a project</h1>
-    <form method="POST" action="/add_project">
+    <form method="POST" action="/add_project_route">
         <label for="project_name">Project Name:</label>
         <input type="text" id="project_name" name="project_name" required><br>
 
@@ -138,7 +154,7 @@
         <input type="date" id="start_date" name="start_date" required><br>
 
         <label for="start_stage">Start stage:</label>
-        <input type="number" id="stage" name="start_stage" value=1 required><br>
+        <input type="number" id="stage" name="start_stage" value=0 required><br>
         
         <label for="end_stage">Number of stages:</label>
         <input type="number" id="stage" name="end_stage" required><br>
@@ -153,7 +169,7 @@
         <input type="submit" value="Add project">
     </form>
 
-    <form method="POST" action="/show_project">
+    <form method="POST" action="/show_project_route">
         <label for="project_select">Choose a project:</label>
         <select id="project_select" name="selected_project" required>
             {% for project in projects %}
@@ -197,15 +213,33 @@
         <!-- Meter -->
         <div>
             <a>Current Stage: {{ data[5] }}</a>
-            <a href="/resources.html" class="submit-link">Resources</a>
+            <a href="/show_project_material_needs_route" class="submit-link">Materials</a>
             {% if data[5] < data[6] %}
                 <a href="/confirm" class="submit-link">Confrim operation</a>
             {% endif %}
             {% if data[2] == session.username %}
-                <a href="/permission" class="submit-link">Modify permissions</a>
+            <a href="/permissions_route" class="submit-link">Modify permissions</a>
             {% endif %}
             <progress value="{{ data[5] }}" max="{{ data[6] }}"></progress>
         </div>
+        {% if data[2] == session.username %}
+            <form id="deleteForm" action="/delete_route" method="POST">
+                <b href="#" class="submit-link" id="deleteLink">Delete project</b>
+            </form>
+        {% endif %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.getElementById('deleteLink').addEventListener('click', function(event) {
+                        event.preventDefault();
+            
+                        // Window
+                        if (confirm('Are you sure you want to delete this project?')) {
+                            // Jos käyttäjä vahvistaa, lähetä lomake
+                            document.getElementById('deleteForm').submit();
+                        }
+                    });
+                });
+            </script>
     {% endif %}
 
 
