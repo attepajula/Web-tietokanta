@@ -69,7 +69,7 @@ def resources_route():
 def show_inventories(materials_list=None):
     username = session.get("username")
     inventories = get_inventories(username)
-    return render_template("inventories.html", inventories=inventories, materials_list=None)
+    return render_template("inventories.html", inventories=inventories, materials_list=materials_list)
 
 @app.route("/permissions_route")
 def permissions_route():
