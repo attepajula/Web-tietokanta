@@ -176,22 +176,26 @@
         </form>
     </div>
     
+
     {% if materials_list %}
-        {% materials_list %}
-        <table border="1">
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Material ID</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for material in materials_list %}
             <tr>
-                <th>Material ID</th>
-                <th>Quantity</th>
+              <td>{{ material.material_id }}</td>
+              <td>{{ material.quantity }}</td>
             </tr>
-            {% for material in materials_list %}
-                <tr>
-                    <td>{{ material.material_id }}</td>
-                    <td>{{ material.quantity }}</td>
-                </tr>
-            {% endfor %}
-        </table>
+          {% endfor %}
+        </tbody>
+      </table>
     {% else %}
-        <p>No materials found for the specified inventory.</p>
+      <p>No materials found for the specified inventory.</p>
     {% endif %}
 
 {% else %}
